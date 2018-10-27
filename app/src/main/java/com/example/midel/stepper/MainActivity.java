@@ -6,15 +6,22 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements ListView.OnItemClickListener{
+    private ListView listView;
+    private ArrayAdapter adapter;
+    private ArrayList<SimpleActivity> activitiesList;
+    private XMLManagerActivity XMLManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -24,6 +31,31 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        /*LEER FICHERO DE ACTIVIDADES*/
+
+        XMLManager = new XMLManagerActivity();
+        activitiesList = new ArrayList<SimpleActivity>();
+
+
+
+        activitiesList.add(new SimpleActivity("primera"));
+        activitiesList.add(new SimpleActivity("segunda"));
+        activitiesList.add(new SimpleActivity("tercera"));
+
+
+
+        listView = findViewById(R.id.listView);
+        listView.setOnItemClickListener(this);
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, activitiesList);
+        listView.setAdapter(adapter);
+        listView.setChoiceMode( ListView.CHOICE_MODE_SINGLE ); // This configuration can be done in XML
+
+        listView.setEnabled(false);
+    }
+
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
     }
 
 }
