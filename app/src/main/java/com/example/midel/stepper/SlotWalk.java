@@ -2,7 +2,9 @@ package com.example.midel.stepper;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class SlotWalk {
+import java.io.Serializable;
+
+public class SlotWalk implements Serializable {
     private float mAltitude;
     private float mDistance;
     private LatLng mLocation;
