@@ -42,7 +42,7 @@ public class SimpleWalk {
     public float getTotalDistance(){ return mTotalDistance;}
     public LatLng getEndingLocation() { return mEndingLocation;}
     public LatLng getInitialLocation() { return mInitialLocation;}
-    public ArrayList<SlotWalk> getmRouteList() { return mRouteList;}
+    public ArrayList<SlotWalk> getRouteList() { return mRouteList;}
 
 
     public void incrementTime(float aTime){ mTotalTime+=aTime; }

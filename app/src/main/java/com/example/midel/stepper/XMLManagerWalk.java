@@ -24,31 +24,69 @@ import com.google.android.gms.maps.model.LatLng;
 
 
 public class XMLManagerWalk {
-    ArrayList<LatLng> routeList;
 
-    public XMLManagerWalk(){
-        routeList = new ArrayList<LatLng>();
-    }
-    public void write_XML(String path, String filename, SimpleWalk sActivity){
+    public void write_XML(String path, String filename, ArrayList<SimpleWalk> simpleWalkList){
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
         try {
             dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.newDocument();
             //add elements to Document
-            Element rootElement =
-                    doc.createElement("activity");
+            Element rootElement = doc.createElement("document");
             //append root element to document
             doc.appendChild(rootElement);
 
             //append first child element to root element
-            for(int i = 0; i< sActivity.getmRouteList().size(); i++) {
-                rootElement.appendChild(getCoordinate(doc, i+"", sActivity.getmRouteList().get(i)));
+            for(int i = 0; i< simpleWalkList.size(); i++) {
+                rootElement.appendChild(getSimpleWalk(doc,simpleWalkList.get(i)));
             }
             saveXMLToFile(doc, path, filename);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Node getSimpleWalk(Document doc, SimpleWalk simpleWalk) {
+        Element simpleWalkNode = doc.createElement("SimpleWalk");
+
+        //set id attribute
+        simpleWalkNode.setAttribute("name", simpleWalk.getName());
+
+        //create name element
+        simpleWalkNode.appendChild(getRoute(doc, simpleWalk.getRouteList()));
+
+        return simpleWalkNode;
+    }
+
+
+    //utility method to create text node
+    private Node getRoute(Document doc, ArrayList<SlotWalk> slotWalkList) {
+        Element routeNode = doc.createElement("Route");
+        for(int i=0; i< slotWalkList.size(); i++){
+            Element slotWalkNode = doc.createElement("SlotWalk");
+            Element altitude = doc.createElement("altitude");
+            altitude.appendChild(doc.createTextNode(slotWalkList.get(i).getAltitude()+""));
+            slotWalkNode.appendChild(altitude);
+
+            Element distance = doc.createElement("distance");
+            distance.appendChild(doc.createTextNode(slotWalkList.get(i).getDistance()+""));
+            slotWalkNode.appendChild(distance);
+
+            Element location = doc.createElement("location");
+            location.appendChild(doc.createTextNode(slotWalkList.get(i).getLocation().longitude+","+slotWalkList.get(i).getLocation().latitude));
+            slotWalkNode.appendChild(location);
+
+            Element steps = doc.createElement("steps");
+            steps.appendChild(doc.createTextNode(slotWalkList.get(i).getSteps()+""));
+            slotWalkNode.appendChild(steps);
+
+            Element time = doc.createElement("time");
+            time.appendChild(doc.createTextNode(slotWalkList.get(i).getTime()+""));
+            slotWalkNode.appendChild(time);
+
+            routeNode.appendChild(slotWalkNode);
+        }
+        return routeNode;
     }
 
     void saveXMLToFile (Document doc, String path, String fileName) throws Exception{
@@ -64,26 +102,7 @@ public class XMLManagerWalk {
         transformer.transform(source, console);
         transformer.transform(source, file);
     }
-
-    private Node getCoordinate(Document doc, String position, LatLng point) {
-        Element coordinate = doc.createElement("coordinate");
-
-        //set id attribute
-        coordinate.setAttribute("position", position);
-
-        //create name element
-        coordinate.appendChild(getCoordinateElement(doc, coordinate, "point", point.latitude+","+point.longitude));
-
-        return coordinate;
-    }
-
-
-    //utility method to create text node
-    private Node getCoordinateElement(Document doc, Element element, String name, String value) {
-        Element node = doc.createElement(name);
-        node.appendChild(doc.createTextNode(value));
-        return node;
-    }
+    //////////////////////////////////////////////
 
     private void parse_XML(InputStream is, SimpleWalk sActivity) {
         Document document = null;
