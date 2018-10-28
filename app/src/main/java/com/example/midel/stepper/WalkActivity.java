@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     Sensor stepperSensor;
     long stepCounter;
+    Vibrator vibrator;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepperSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         stepCounter=0;
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
@@ -72,10 +75,12 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     public void onClick(View view) {
                         if(!running){
                             time.start();
+                            vibrator.vibrate(500);
                             sensorManager.registerListener(WalkActivity.this, stepperSensor, SensorManager.SENSOR_DELAY_NORMAL);
                             running=!running;
                         }else{
                             time.stop();
+                            vibrator.vibrate(500);
                             sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
                             running=!running;
                         }
