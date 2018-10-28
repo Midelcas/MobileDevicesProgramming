@@ -84,6 +84,6 @@ public class SimpleWalk {
     }
 
     public String toString(){
-        return mName;
+        return mDate.toString() + "\n" +mName;
     }
 }

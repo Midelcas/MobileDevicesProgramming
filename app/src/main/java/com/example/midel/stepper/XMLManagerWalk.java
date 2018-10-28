@@ -98,7 +98,7 @@ public class XMLManagerWalk {
         return routeNode;
     }
 
-    void saveXMLToFile (Document doc, String path, String fileName) throws Exception{
+    private void saveXMLToFile (Document doc, File path, String fileName) throws Exception{
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         //for pretty print
@@ -106,14 +106,14 @@ public class XMLManagerWalk {
         DOMSource source = new DOMSource(doc);
 
         StreamResult console = new StreamResult(System.out);
-        StreamResult file = new StreamResult(new File(path+"/"+fileName));
+        StreamResult file = new StreamResult(new File(path,fileName));
 
         transformer.transform(source, console);
         transformer.transform(source, file);
     }
     //////////////////////////////////////////////
 
-    private FileInputStream read_File(String path, String filename) throws IOException{
+    public FileInputStream read_File(File path, String filename) throws IOException{
         File f = new File(path, filename);
         FileInputStream is = null;
         if (f.exists()) { // Delete the file if it exists
@@ -122,7 +122,7 @@ public class XMLManagerWalk {
         return is;
     }
 
-    private void parse_XML(InputStream is, ArrayList<SimpleWalk> simpleWalkList) throws ParseException {
+    public void parse_XML(InputStream is, ArrayList<SimpleWalk> simpleWalkList) throws ParseException {
         Document document = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
