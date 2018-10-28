@@ -36,14 +36,10 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                 new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SimpleWalk simpleWalk = new SimpleWalk("NUEVA", null);
-                activitiesList.add(simpleWalk);
-                adapter.notifyDataSetChanged();
-
                 Intent i = new Intent(MainActivity.this,WalkActivity.class);
                 // Put as extras the coordinates string and the camera name corresponding to the currently
                 // selected camera:
-                i.putExtra("simpleWalk", simpleWalk );
+                //i.putExtra("simpleWalkList", activitiesList );
                 startActivity(i);
 
                 /*PASAR A PANTALLA DE PASEO*/
@@ -55,17 +51,26 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         XMLManager = new XMLManagerWalk();
         activitiesList = new ArrayList<SimpleWalk>();
 
+
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(this);
         listView.setChoiceMode( ListView.CHOICE_MODE_SINGLE );
 
-        checkWalks();
+
 
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, activitiesList);
         listView.setAdapter(adapter);
          // This configuration can be done in XML
 
         //listView.setEnabled(false);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        activitiesList.clear();
+        checkWalks();
+        adapter.notifyDataSetChanged();
     }
 
     public void checkWalks(){

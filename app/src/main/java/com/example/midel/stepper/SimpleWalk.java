@@ -14,10 +14,10 @@ public class SimpleWalk implements Serializable {
     private long mTotalSteps;
     private float mTotalTime;
     private float mTotalDistance;
-    private float mInitialAltitude;
-    private float mMaxAltitude;
-    private float mMinAltitude;
-    private float mEndingAltitude;
+    private double mInitialAltitude;
+    private double mMaxAltitude;
+    private double mMinAltitude;
+    private double mEndingAltitude;
     private LatLng mInitialLocation;
     private LatLng mEndingLocation;
     private ArrayList<SlotWalk> mRouteList;
@@ -49,7 +49,7 @@ public class SimpleWalk implements Serializable {
     public Date getDate(){ return mDate;}
     public float getTotalTime(){ return mTotalTime;}
     public long getTotalSteps(){ return mTotalSteps;}
-    public float getTotalDistance(){ return mTotalDistance;}
+    public double getTotalDistance(){ return mTotalDistance;}
     public LatLng getEndingLocation() { return mEndingLocation;}
     public LatLng getInitialLocation() { return mInitialLocation;}
     public ArrayList<SlotWalk> getRouteList() { return mRouteList;}
@@ -57,6 +57,9 @@ public class SimpleWalk implements Serializable {
     public void startWalk(SlotWalk aSlot){
         mInitialAltitude = aSlot.getAltitude();
         mInitialLocation = aSlot.getLocation();
+        mMinAltitude = aSlot.getAltitude();
+        mMaxAltitude = aSlot.getAltitude();
+        addSlot(aSlot);
     }
     public void endWalk(SlotWalk aSlot){
         mEndingLocation = aSlot.getLocation();
@@ -66,11 +69,11 @@ public class SimpleWalk implements Serializable {
     public void incrementTime(float aTime){ mTotalTime+=aTime; }
     public void incrementSteps(long aSteps){ mTotalSteps += aSteps;}
     public void incrementDistance(float aDistance){ mTotalDistance+= aDistance;}
-    private void setMaxAltitude(float aAltitude){
+    private void setMaxAltitude(double aAltitude){
         if(aAltitude>mMaxAltitude)
             mMaxAltitude = aAltitude;
     }
-    private void setMinAltitude(float aAltitude){
+    private void setMinAltitude(double aAltitude){
         if(aAltitude<mMinAltitude)
             mMinAltitude = aAltitude;
     }

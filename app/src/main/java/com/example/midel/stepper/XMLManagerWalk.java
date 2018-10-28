@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -99,7 +100,7 @@ public class XMLManagerWalk {
         return routeNode;
     }
 
-    private void saveXMLToFile (Document doc, File path, String fileName) throws Exception{
+    public void saveXMLToFile (Document doc, File path, String fileName) throws Exception{
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         //for pretty print
@@ -135,52 +136,62 @@ public class XMLManagerWalk {
             DocumentBuilder builder = factory.newDocumentBuilder();
             document = builder.parse(is);
 
+
+
+            NodeList documentList = document.getElementsByTagName("document");
+            Element documentNode = (Element) documentList.item(0);
+
+            NodeList simpleWalkNodeList = documentNode.getElementsByTagName("SimpleWalk");
+            for (int i = 0; i < simpleWalkNodeList.getLength(); i++) {
+                Element simpleWalkNode = (Element) simpleWalkNodeList.item(i);
+                NodeList dateNodeList =  simpleWalkNode.getElementsByTagName("Date");
+                SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy", Locale.ENGLISH);
+                Element dateNode = (Element) dateNodeList.item(0);
+                Date date = formatter.parse(dateNode.getTextContent());
+
+                SimpleWalk simpleWalk = new SimpleWalk(simpleWalkNode.getAttribute("name"),date);
+
+                NodeList routeList = simpleWalkNode.getElementsByTagName("Route");
+                Element routeNode = (Element) routeList.item(0);
+
+                NodeList slotWalkList = routeNode.getElementsByTagName("SlotWalk");
+
+                for (int j = 0; j < slotWalkList.getLength(); j++) {
+                    Element slotNode = (Element) slotWalkList.item(j);
+                    NodeList altitudeList = slotNode.getElementsByTagName("altitude");
+                    Element altitudeNode = (Element) altitudeList.item(0);
+                    double altitude = Double.parseDouble(altitudeNode.getTextContent());
+                    NodeList distanceList = slotNode.getElementsByTagName("distance");
+                    Element distanceNode = (Element) distanceList.item(0);
+                    float distance = Float.parseFloat(distanceNode.getTextContent());
+                    NodeList locationList = slotNode.getElementsByTagName("location");
+                    Element locationNode = (Element)locationList.item(0);
+                    String[] locationString = locationNode.getTextContent().split("\n")[0].split(",");
+                    LatLng location = new LatLng(Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]));
+
+                    NodeList stepsList =  slotNode.getElementsByTagName("steps");
+                    Element stepsNode = (Element) stepsList.item(0);
+                    long steps = Long.parseLong(stepsNode.getTextContent());
+                    NodeList timeList = slotNode.getElementsByTagName("time");
+                    Element timeNode = (Element)timeList.item(0);
+                    float time = Float.parseFloat(timeNode.getTextContent());
+
+                    SlotWalk slotWalk = new SlotWalk(altitude, distance, location, steps, time);
+                    if (j == 0) {
+                        simpleWalk.startWalk(slotWalk);
+                    } else if(j== (slotWalkList.getLength()-1)){
+                        simpleWalk.endWalk(slotWalk);
+                    }else{
+                        simpleWalk.addSlot(slotWalk);
+                    }
+
+                }
+                simpleWalkList.add(simpleWalk);
+            }
+            is.close();
         } catch (ParserConfigurationException e) {
         } catch (SAXException e) {
         } catch (IOException e) {
-        }
-
-        NodeList documentList = document.getElementsByTagName("document");
-        Element documentNode = (Element) documentList.item(0);
-
-        NodeList simpleWalkNodeList = documentNode.getElementsByTagName("SimpleWalk");
-        for (int i = 0; i < simpleWalkNodeList.getLength(); i++) {
-            Element simpleWalkNode = (Element) simpleWalkNodeList.item(i);
-            Element dateNode = (Element) simpleWalkNode.getElementsByTagName("Date");
-            SimpleDateFormat formatter = new SimpleDateFormat();
-            Date date = formatter.parse(dateNode.getTextContent());
-
-            SimpleWalk simpleWalk = new SimpleWalk(simpleWalkNode.getAttribute("name"),date);
-
-            NodeList routeList = simpleWalkNode.getElementsByTagName("Route");
-            Element routeNode = (Element) routeList.item(0);
-
-            NodeList slotWalkList = routeNode.getElementsByTagName("SlotWalk");
-
-            for (int j = 0; j < slotWalkList.getLength(); j++) {
-                Element slotNode = (Element) slotWalkList.item(j);
-                Element altitudeNode = (Element) slotNode.getElementsByTagName("altitude");
-                float altitude = Float.parseFloat(altitudeNode.getTextContent());
-                Element distanceNode = (Element) slotNode.getElementsByTagName("distance");
-                float distance = Float.parseFloat(distanceNode.getTextContent());
-                Element locationNode = (Element) slotNode.getElementsByTagName("location");
-                String[] locationString = locationNode.getTextContent().split("\n")[1].split(",");
-                ;
-                LatLng location = new LatLng(Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]));
-
-                Element stepsNode = (Element) slotNode.getElementsByTagName("steps");
-                long steps = Long.parseLong(stepsNode.getTextContent());
-                Element timeNode = (Element) slotNode.getElementsByTagName("time");
-                float time = Float.parseFloat(timeNode.getTextContent());
-
-                SlotWalk slotWalk = new SlotWalk(altitude, distance, location, steps, time);
-                if (j == 0) {
-                    simpleWalk.startWalk(slotWalk);
-                } else {
-                    simpleWalk.addSlot(slotWalk);
-                }
-
-            }
         }
     }
 }
