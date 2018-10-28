@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,8 +14,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements ListView.OnItemClickListener{
     private ListView listView;
     private ArrayAdapter adapter;
-    private ArrayList<SimpleActivity> activitiesList;
-    private XMLManagerActivity XMLManager;
+    private ArrayList<SimpleWalk> activitiesList;
+    private XMLManagerWalk XMLManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +33,14 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
         /*LEER FICHERO DE ACTIVIDADES*/
 
-        XMLManager = new XMLManagerActivity();
-        activitiesList = new ArrayList<SimpleActivity>();
+        XMLManager = new XMLManagerWalk();
+        activitiesList = new ArrayList<SimpleWalk>();
 
 
 
-        activitiesList.add(new SimpleActivity("primera"));
-        activitiesList.add(new SimpleActivity("segunda"));
-        activitiesList.add(new SimpleActivity("tercera"));
+        activitiesList.add(new SimpleWalk("primera"));
+        activitiesList.add(new SimpleWalk("segunda"));
+        activitiesList.add(new SimpleWalk("tercera"));
 
 
 

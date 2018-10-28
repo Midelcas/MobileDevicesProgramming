@@ -7,7 +7,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,13 +23,13 @@ import javax.xml.transform.stream.StreamResult;
 import com.google.android.gms.maps.model.LatLng;
 
 
-public class XMLManagerActivity {
+public class XMLManagerWalk {
     ArrayList<LatLng> routeList;
 
-    public XMLManagerActivity(){
+    public XMLManagerWalk(){
         routeList = new ArrayList<LatLng>();
     }
-    public void write_XML(String path, String filename, SimpleActivity sActivity){
+    public void write_XML(String path, String filename, SimpleWalk sActivity){
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
         try {
@@ -86,7 +85,7 @@ public class XMLManagerActivity {
         return node;
     }
 
-    private void parse_XML(InputStream is, SimpleActivity sActivity) {
+    private void parse_XML(InputStream is, SimpleWalk sActivity) {
         Document document = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -129,7 +128,7 @@ public class XMLManagerActivity {
         sActivity.setRouteList(routeList);
     }
 
-    public void parse_XML_route(InputStream is, SimpleActivity sActivity) throws Exception{
+    public void parse_XML_route(InputStream is, SimpleWalk sActivity) throws Exception{
         Document document = null;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
