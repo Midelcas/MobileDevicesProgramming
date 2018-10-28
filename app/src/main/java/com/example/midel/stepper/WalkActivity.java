@@ -2,6 +2,7 @@ package com.example.midel.stepper;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -14,11 +15,14 @@ import android.os.SystemClock;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,10 +82,10 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         XMLManager = new XMLManagerWalk();
         activitiesList = new ArrayList<SimpleWalk>();
         checkWalks();
-        simpleWalk = new SimpleWalk("NUEVA", null);
-        activitiesList.add(simpleWalk);
+        getName();
 
-        setTitle(simpleWalk.getName());
+
+
         cancelbtn = (FloatingActionButton) findViewById(R.id.cancelbtn);
         pausebtn = (FloatingActionButton) findViewById(R.id.pausebtn);
         finishbtn = (FloatingActionButton) findViewById(R.id.finishbtn);
@@ -100,6 +104,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         previousSteps = 0;
         previousTime = 0;
         previousAltitude = 0;
+
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -303,6 +308,40 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
             toast = Toast.makeText(this,"Error while parsing xml",Toast.LENGTH_SHORT);
             toast.show();
         }
+    }
+
+    private void getName(){
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
+        View mView = layoutInflaterAndroid.inflate(R.layout.pop_up, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(mView);
+        final EditText userInputDialogEditText = (EditText) mView.findViewById(R.id.userInputDialog);
+        alert
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+                        String name = userInputDialogEditText.getText().toString();
+                        if(name.length()==0){
+                            name = "New Walk";
+                        }
+                        simpleWalk = new SimpleWalk(name, null);
+                        setTitle(simpleWalk.getName());
+                        activitiesList.add(simpleWalk);
+                    }
+                })
+
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                                simpleWalk = new SimpleWalk("New Walk", null);
+                                setTitle(simpleWalk.getName());
+                                activitiesList.add(simpleWalk);
+                            }
+                        });
+
+        AlertDialog alertDialogAndroid = alert.create();
+        alertDialogAndroid.show();
     }
 
 
