@@ -7,6 +7,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -25,12 +26,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class XMLManagerWalk {
 
-    public void write_XML(String path, String filename, ArrayList<SimpleWalk> simpleWalkList){
+    public Document write_XML(ArrayList<SimpleWalk> simpleWalkList){
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
+        Document doc = null;
         try {
             dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.newDocument();
+            doc = dBuilder.newDocument();
             //add elements to Document
             Element rootElement = doc.createElement("document");
             //append root element to document
@@ -40,9 +42,10 @@ public class XMLManagerWalk {
             for(int i = 0; i< simpleWalkList.size(); i++) {
                 rootElement.appendChild(getSimpleWalk(doc,simpleWalkList.get(i)));
             }
-            saveXMLToFile(doc, path, filename);
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            return doc;
         }
     }
 
@@ -104,7 +107,16 @@ public class XMLManagerWalk {
     }
     //////////////////////////////////////////////
 
-    private void parse_XML(InputStream is, SimpleWalk sActivity) {
+    private FileInputStream read_File(String path, String filename) throws IOException{
+        File f = new File(path, filename);
+        FileInputStream is = null;
+        if (f.exists()) { // Delete the file if it exists
+            is = new FileInputStream(f);
+        }
+        return is;
+    }
+
+    private void parse_XML(InputStream is, ArrayList<SimpleWalk> simpleWalkList) {
         Document document = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -121,53 +133,43 @@ public class XMLManagerWalk {
         } catch (IOException e) {
         }
 
-        NodeList folderList = document.getElementsByTagName("Folder");
+        NodeList documentList = document.getElementsByTagName("document");
+        Element documentNode = (Element) documentList.item(0);
 
-        for (int i = 0; i < folderList.getLength(); i++) {
-            Element folder = (Element) folderList.item(i);
+        NodeList simpleWalkNodeList = documentNode.getElementsByTagName("SimpleWalk");
+        for (int i = 0; i < simpleWalkNodeList.getLength(); i++) {
+            Element simpleWalkNode = (Element) simpleWalkNodeList.item(i);
+            SimpleWalk simpleWalk = new SimpleWalk(simpleWalkNode.getAttribute("name"));
 
-            NodeList placemarkList = folder.getElementsByTagName("Placemark");
-            Element placemark =  (Element) placemarkList.item(0);
+            NodeList routeList = simpleWalkNode.getElementsByTagName("Route");
+            Element routeNode = (Element) routeList.item(0);
 
+            NodeList slotWalkList = routeNode.getElementsByTagName("SlotWalk");
 
-            NodeList LineStringList = placemark.getElementsByTagName("LineString");
-            Element LineString = (Element) LineStringList.item(0);
+            for (int j = 0; j < slotWalkList.getLength(); j++) {
+                Element slotNode = (Element) slotWalkList.item(j);
+                Element altitudeNode = (Element) slotNode.getElementsByTagName("altitude");
+                float altitude = Float.parseFloat(altitudeNode.getTextContent());
+                Element distanceNode = (Element) slotNode.getElementsByTagName("distance");
+                float distance = Float.parseFloat(altitudeNode.getTextContent());
+                Element locationNode = (Element) slotNode.getElementsByTagName("location");
+                String[] locationString = altitudeNode.getTextContent().split("\n")[1].split(",");
+                ;
+                LatLng location = new LatLng(Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]));
 
-            NodeList coordinatesList = LineString.getElementsByTagName("coordinates");
-            Element coordinates = (Element) coordinatesList.item(0);
-            String route = coordinates.getTextContent();
-            String[] points = route.split("\n");
+                Element stepsNode = (Element) slotNode.getElementsByTagName("steps");
+                long steps = Long.parseLong(altitudeNode.getTextContent());
+                Element timeNode = (Element) slotNode.getElementsByTagName("time");
+                float time = Float.parseFloat(altitudeNode.getTextContent());
 
-            for(int j =0; j < points.length; j++) {
-                routeList.add(new LatLng(Double.parseDouble(points[j].split(",")[1]), Double.parseDouble(points[j].split(",")[0])));
+                SlotWalk slotWalk = new SlotWalk(altitude, distance, location, steps, time);
+                if (j == 0) {
+                    simpleWalk.startWalk(slotWalk);
+                } else {
+                    simpleWalk.addSlot(slotWalk);
+                }
+
             }
-
-
         }
-        sActivity.setRouteList(routeList);
-    }
-
-    public void parse_XML_route(InputStream is, SimpleWalk sActivity) throws Exception{
-        Document document = null;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-        factory.setExpandEntityReferences(false);
-        factory.setIgnoringComments(true);
-        factory.setIgnoringElementContentWhitespace(true);
-
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        document = builder.parse(is);
-        NodeList activityList = document.getElementsByTagName("activity");
-        Element activity = (Element) activityList.item(0);
-
-        NodeList coordinatesList = activity.getElementsByTagName("coordinate");
-        Element coordinate =  (Element) coordinatesList.item(0);
-        routeList.clear();;
-        for(int i=0; i< coordinatesList.getLength(); i++){
-            String[] coord = coordinatesList.item(i).getTextContent().split("\n")[1].split(",");
-            routeList.add(new LatLng(Double.parseDouble(coord[0]),Double.parseDouble(coord[1])));
-        }
-
-        sActivity.setRouteList(routeList);
     }
 }

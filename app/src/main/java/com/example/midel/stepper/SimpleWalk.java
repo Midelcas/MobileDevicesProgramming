@@ -20,12 +20,11 @@ public class SimpleWalk {
 
 
 
-    public SimpleWalk(String aName, SlotWalk aSlot){
+    public SimpleWalk(String aName){
         mName = aName;
         mRouteList = new ArrayList<SlotWalk>();
-
-        mInitialAltitude = aSlot.getAltitude();
-        mInitialLocation = aSlot.getLocation();
+        mInitialAltitude = 0;
+        mInitialLocation = null;
         mEndingLocation = null;
         mTotalTime = 0;
         mTotalSteps = 0;
@@ -36,6 +35,7 @@ public class SimpleWalk {
         mEndingAltitude = 0;
     }
 
+
     public String getName(){ return mName;}
     public float getTotalTime(){ return mTotalTime;}
     public long getTotalSteps(){ return mTotalSteps;}
@@ -44,7 +44,15 @@ public class SimpleWalk {
     public LatLng getInitialLocation() { return mInitialLocation;}
     public ArrayList<SlotWalk> getRouteList() { return mRouteList;}
 
-
+    public void startWalk(SlotWalk aSlot){
+        mInitialAltitude = aSlot.getAltitude();
+        mInitialLocation = aSlot.getLocation();
+    }
+    public void endWalk(SlotWalk aSlot){
+        mEndingLocation = aSlot.getLocation();
+        mEndingAltitude = aSlot.getAltitude();
+        addSlot(aSlot);
+    }
     public void incrementTime(float aTime){ mTotalTime+=aTime; }
     public void incrementSteps(long aSteps){ mTotalSteps += aSteps;}
     public void incrementDistance(float aDistance){ mTotalDistance+= aDistance;}
