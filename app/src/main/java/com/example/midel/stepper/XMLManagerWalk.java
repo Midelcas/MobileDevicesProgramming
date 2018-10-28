@@ -10,7 +10,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,7 +58,10 @@ public class XMLManagerWalk {
         //set id attribute
         simpleWalkNode.setAttribute("name", simpleWalk.getName());
 
+        Element dateNode = doc.createElement("Date");
+        dateNode.appendChild(doc.createTextNode(simpleWalk.getDate().toString()));
         //create name element
+        simpleWalkNode.appendChild(dateNode);
         simpleWalkNode.appendChild(getRoute(doc, simpleWalk.getRouteList()));
 
         return simpleWalkNode;
@@ -116,7 +122,7 @@ public class XMLManagerWalk {
         return is;
     }
 
-    private void parse_XML(InputStream is, ArrayList<SimpleWalk> simpleWalkList) {
+    private void parse_XML(InputStream is, ArrayList<SimpleWalk> simpleWalkList) throws ParseException {
         Document document = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -139,7 +145,11 @@ public class XMLManagerWalk {
         NodeList simpleWalkNodeList = documentNode.getElementsByTagName("SimpleWalk");
         for (int i = 0; i < simpleWalkNodeList.getLength(); i++) {
             Element simpleWalkNode = (Element) simpleWalkNodeList.item(i);
-            SimpleWalk simpleWalk = new SimpleWalk(simpleWalkNode.getAttribute("name"));
+            Element dateNode = (Element) simpleWalkNode.getElementsByTagName("Date");
+            SimpleDateFormat formatter = new SimpleDateFormat();
+            Date date = formatter.parse(dateNode.getTextContent());
+
+            SimpleWalk simpleWalk = new SimpleWalk(simpleWalkNode.getAttribute("name"),date);
 
             NodeList routeList = simpleWalkNode.getElementsByTagName("Route");
             Element routeNode = (Element) routeList.item(0);
@@ -151,16 +161,16 @@ public class XMLManagerWalk {
                 Element altitudeNode = (Element) slotNode.getElementsByTagName("altitude");
                 float altitude = Float.parseFloat(altitudeNode.getTextContent());
                 Element distanceNode = (Element) slotNode.getElementsByTagName("distance");
-                float distance = Float.parseFloat(altitudeNode.getTextContent());
+                float distance = Float.parseFloat(distanceNode.getTextContent());
                 Element locationNode = (Element) slotNode.getElementsByTagName("location");
-                String[] locationString = altitudeNode.getTextContent().split("\n")[1].split(",");
+                String[] locationString = locationNode.getTextContent().split("\n")[1].split(",");
                 ;
                 LatLng location = new LatLng(Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]));
 
                 Element stepsNode = (Element) slotNode.getElementsByTagName("steps");
-                long steps = Long.parseLong(altitudeNode.getTextContent());
+                long steps = Long.parseLong(stepsNode.getTextContent());
                 Element timeNode = (Element) slotNode.getElementsByTagName("time");
-                float time = Float.parseFloat(altitudeNode.getTextContent());
+                float time = Float.parseFloat(timeNode.getTextContent());
 
                 SlotWalk slotWalk = new SlotWalk(altitude, distance, location, steps, time);
                 if (j == 0) {

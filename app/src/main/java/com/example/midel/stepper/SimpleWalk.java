@@ -4,8 +4,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class SimpleWalk {
+    private Date mDate;
     private String mName;
     private long mTotalSteps;
     private float mTotalTime;
@@ -20,7 +23,7 @@ public class SimpleWalk {
 
 
 
-    public SimpleWalk(String aName){
+    public SimpleWalk(String aName, Date aDate){
         mName = aName;
         mRouteList = new ArrayList<SlotWalk>();
         mInitialAltitude = 0;
@@ -33,10 +36,16 @@ public class SimpleWalk {
         mMaxAltitude = 0;
         mMinAltitude = 0;
         mEndingAltitude = 0;
+        if(aDate == null) {
+            mDate = Calendar.getInstance().getTime();
+        }else{
+            mDate = aDate;
+        }
     }
 
 
     public String getName(){ return mName;}
+    public Date getDate(){ return mDate;}
     public float getTotalTime(){ return mTotalTime;}
     public long getTotalSteps(){ return mTotalSteps;}
     public float getTotalDistance(){ return mTotalDistance;}
