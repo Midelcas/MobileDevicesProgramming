@@ -2,12 +2,13 @@ package com.example.midel.stepper;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class SimpleWalk {
+public class SimpleWalk implements Serializable {
     private Date mDate;
     private String mName;
     private long mTotalSteps;

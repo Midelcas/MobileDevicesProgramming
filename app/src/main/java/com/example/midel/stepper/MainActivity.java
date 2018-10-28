@@ -1,5 +1,6 @@
 package com.example.midel.stepper;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -35,8 +36,15 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                 new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activitiesList.add(new SimpleWalk("NUEVA", null));
+                SimpleWalk simpleWalk = new SimpleWalk("NUEVA", null);
+                activitiesList.add(simpleWalk);
                 adapter.notifyDataSetChanged();
+
+                Intent i = new Intent(MainActivity.this,WalkActivity.class);
+                // Put as extras the coordinates string and the camera name corresponding to the currently
+                // selected camera:
+                i.putExtra("simpleWalk", simpleWalk );
+                startActivity(i);
 
                 /*PASAR A PANTALLA DE PASEO*/
             }
