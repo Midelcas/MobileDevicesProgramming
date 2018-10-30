@@ -77,7 +77,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walk);
-        XMLManager = new XMLManagerWalk();
         running = false;
         XMLManager = new XMLManagerWalk();
         activitiesList = new ArrayList<SimpleWalk>();
@@ -129,7 +128,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     slot = new SlotWalk(previousAltitude, previousDistance, previousLocation,
                             previousSteps, previousTime);
                 }
-                ready = true;
+                ready = true;//gps ready
             }
         };
         checkLocationPermission();
@@ -142,7 +141,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         mLocation.removeLocationUpdates(mLocationCallback);
                         vibrator.vibrate(500);
                         sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
-                        running = !running;
+                        running = false;
                         /*VOLVER A LA PANTALLA ANTERIOR*/
                     }
                 });
@@ -164,9 +163,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                                 toast.show();
                             }
                         } else {
-                            time.stop();
                             mLocation.removeLocationUpdates(mLocationCallback);
                             vibrator.vibrate(500);
+                            time.stop();
                             sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
                             running = !running;
                         }
@@ -176,13 +175,11 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        time.stop();
+
                         mLocation.removeLocationUpdates(mLocationCallback);
                         vibrator.vibrate(500);
-                        sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
                         getLastPosition();
                         running = !running;
-                        try{XMLManager.saveXMLToFile(XMLManager.write_XML(activitiesList),getFilesDir(), WALKSXMLFILE);}catch(Exception e){}
                     }
                 });
 
@@ -228,7 +225,10 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     public void onSuccess(Location location) {
                         // GPS location can be null if GPS is switched off
                         if (location != null) {
+                            time.stop();
+                            sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
                             simpleWalk.endWalk(prepareData(location));
+                            try{XMLManager.saveXMLToFile(XMLManager.write_XML(activitiesList),getFilesDir(), WALKSXMLFILE);}catch(Exception e){}
                         }
                     }
                 });
@@ -246,17 +246,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
             }
             else {
                 mLocation.requestLocationUpdates(getLocationRequest(), mLocationCallback, null);
-                /*mLocation.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // GPS location can be null if GPS is switched off
-                        if (location != null) {
-                            myLat = location.getLatitude();
-                            myLon = location.getLongitude();
-                        }else{
-                        }
-                    }
-                });*/
             }
         }
     }
