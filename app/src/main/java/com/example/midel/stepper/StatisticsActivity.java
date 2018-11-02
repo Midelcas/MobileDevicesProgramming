@@ -38,6 +38,10 @@ public class StatisticsActivity extends AppCompatActivity {
     private LineData lineData2;
     private int xIndex2 = 0;
 
+    private List<Entry> entries3 = new ArrayList<Entry>();
+    private LineChart lChart3;
+    private LineDataSet dataSet3;
+    private LineData lineData3;
 
 
 
@@ -47,6 +51,7 @@ public class StatisticsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistics);
         lChart=(LineChart)findViewById(R.id.chart);
         lChart2=(LineChart)findViewById(R.id.chart2);
+        lChart3=(LineChart)findViewById(R.id.chart3);
 
         Intent i=getIntent();
 
@@ -54,24 +59,25 @@ public class StatisticsActivity extends AppCompatActivity {
         XMLManager = new XMLManagerWalk();
         activitiesList = new ArrayList<SimpleWalk>();
         registrosSlotWalk= new ArrayList<SlotWalk>();
-        SimpleWalk kk=null;
+        SimpleWalk simpleWalk=null;
 
 
         checkWalks();
-        kk=activitiesList.get(position);
+        simpleWalk=activitiesList.get(position);
 
-        String name=kk.getName();
-        long totalSteps=kk.getTotalSteps();
+        String name=simpleWalk.getName();
+        long totalSteps=simpleWalk.getTotalSteps();
         float totalTime=0;
-        double totalDistance=kk.getTotalDistance();
+        double totalDistance=simpleWalk.getTotalDistance();
 
 
-        registrosSlotWalk= kk.getRouteList();
+        registrosSlotWalk= simpleWalk.getRouteList();
 
         int size=registrosSlotWalk.size();
 
         float registroPasos [] = new float[size];
         float registroTiempo [] = new float[size];
+        float registroVelocidad [] = new float[size];
 
         for(int j=1;j<registrosSlotWalk.size();j++){
             registroPasos[j]= registrosSlotWalk.get(j).getSteps();
@@ -94,11 +100,18 @@ public class StatisticsActivity extends AppCompatActivity {
         dataSet2=new LineDataSet (entries2,"altura/segundo");
         lChart2.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 
+        entries3.add(new Entry((long)(xIndex++),0));
+        dataSet3=new LineDataSet (entries3,"km/h");
+        lChart3.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+
         lineData=new LineData(dataSet);
         lChart.setData(lineData);
 
         lineData2=new LineData (dataSet2);
         lChart2.setData(lineData2);
+
+        lineData3=new LineData (dataSet3);
+        lChart3.setData(lineData3);
 
         float incrementoT;
         float incrementoT1=registroTiempo[0];
@@ -115,17 +128,29 @@ public class StatisticsActivity extends AppCompatActivity {
             incrementoT1=incrementoT;
         }
 
-/**/
+        for(xIndex=0; xIndex<(registrosSlotWalk.size()); xIndex++){
+            registroVelocidad[xIndex]= (float) (((registrosSlotWalk.get(xIndex).getDistance())/(registrosSlotWalk.get(xIndex).getTime()))*3.6);
+            if(registrosSlotWalk.get(xIndex).getTime()==0){
+                registroVelocidad[xIndex]=0;
+                //dataSet3.addEntry(new Entry(xIndex, (int) registroVelocidad[xIndex]));
+            }
+            else {
+                dataSet3.addEntry(new Entry(xIndex, (int) registroVelocidad[xIndex]));
+                dataSet3.setDrawValues(false);
+            }
+        }
+
+
         int tamaño=registrosSlotWalk.size();
         for(xIndex2=1; xIndex2<tamaño; xIndex2++){
             dataSet2.addEntry(new Entry ( xIndex2, (int)registrosSlotWalk.get(xIndex2).getAltitude()));
             dataSet2.setDrawValues(false);
 
         }
-/**/
+
         lineData.notifyDataChanged();
-        lineData.getYMax();
-        lineData.getYMin();
+        float maxPasos = lineData.getYMax();
+        float minPasos = lineData.getYMin();
         lChart.notifyDataSetChanged();
         lChart.invalidate(); // refresh
 
@@ -134,11 +159,34 @@ public class StatisticsActivity extends AppCompatActivity {
         lChart2.notifyDataSetChanged();
         lChart2.invalidate(); // refresh
 
+        lineData3.notifyDataChanged();
+        lChart3.notifyDataSetChanged();
+        lChart3.invalidate(); // refresh
+
 
 
         TextView tvName=(TextView)findViewById(R.id.tvname);
         tvName.setText(name);
 
+        TextView tvmaxPasos;
+        tvmaxPasos=findViewById(R.id.tvmaxpasos);
+        String smaxpasos=Float.toString(lineData.getYMax());
+        tvmaxPasos.setText(smaxpasos);
+
+        TextView tvminPasos;
+        tvminPasos=findViewById(R.id.tvminpasos);
+        String sminpasos=Float.toString(lineData.getYMin());
+        tvminPasos.setText(sminpasos);
+
+        TextView tvmaxh;
+        tvmaxh=findViewById(R.id.tvmaxh);
+        String smaxH=Float.toString(lineData2.getYMax());
+        tvmaxh.setText(smaxH);
+
+        TextView tvminh;
+        tvminPasos=findViewById(R.id.tvminh);
+        String sminH=Float.toString(lineData2.getYMin());
+        tvminPasos.setText(sminH);
 
 /*
         TextView tvtotalSteps, tvtotalTime, tvtotalDistance;
