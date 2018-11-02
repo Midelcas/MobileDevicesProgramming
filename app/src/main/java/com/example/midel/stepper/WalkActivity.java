@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,7 +70,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     float totalDistance;
     float currentSpeed;
 
-    private XMLManagerWalk XMLManager;
+    //private com.example.midel.stepper.XMLManager XMLManager;
     private final String WALKSXMLFILE = "simpleWalks.xml";
 
     @Override
@@ -85,7 +84,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra("simpleWalkList");
 
         running = false;
-        XMLManager = new XMLManagerWalk();
         getName();
 
         cancelbtn = (FloatingActionButton) findViewById(R.id.cancelbtn);
@@ -229,7 +227,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             time.stop();
                             sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
                             simpleWalk.endWalk(prepareData(location));
-                            try{XMLManager.saveXMLToFile(XMLManager.write_XML(activitiesList),getFilesDir(), WALKSXMLFILE);}catch(Exception e){}
+                            try{XMLManager.XMLWalk.saveXMLToFile(XMLManager.XMLWalk.write_XML(activitiesList),getFilesDir(), WALKSXMLFILE);}catch(Exception e){}
                         }
                     }
                 });
@@ -283,8 +281,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     public void checkWalks(){
         try {
-            FileInputStream is = XMLManager.read_File(getFilesDir(), WALKSXMLFILE);
-            XMLManager.parse_XML(is,activitiesList);
+            FileInputStream is = XMLManager.XMLWalk.read_File(getFilesDir(), WALKSXMLFILE);
+            XMLManager.XMLWalk.parse_XML(is,activitiesList);
         }catch(IOException e){
             Toast toast;
             toast = Toast.makeText(this,"Error while reading xml",Toast.LENGTH_SHORT);

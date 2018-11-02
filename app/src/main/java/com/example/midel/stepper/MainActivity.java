@@ -3,7 +3,6 @@ package com.example.midel.stepper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -22,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
     private ListView listView;
     private ArrayAdapter adapter;
     private ArrayList<SimpleWalk> activitiesList;
-    private XMLManagerWalk XMLManager;
+    //private com.example.midel.stepper.XMLManager XMLManager;
     private final String WALKSXMLFILE = "simpleWalks.xml";
 
     @Override
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
         /*LEER FICHERO DE ACTIVIDADES*/
 
-        XMLManager = new XMLManagerWalk();
+        //XMLManager = new XMLManager();
         activitiesList = new ArrayList<SimpleWalk>();
 
 
@@ -75,8 +74,8 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
     public void checkWalks(){
         try {
-            FileInputStream is = XMLManager.read_File(getFilesDir(), WALKSXMLFILE);
-            XMLManager.parse_XML(is,activitiesList);
+            FileInputStream is = XMLManager.XMLWalk.read_File(getFilesDir(), WALKSXMLFILE);
+            XMLManager.XMLWalk.parse_XML(is,activitiesList);
         }catch(IOException e){
             Toast toast;
             toast = Toast.makeText(this,"Error while reading xml",Toast.LENGTH_SHORT);
