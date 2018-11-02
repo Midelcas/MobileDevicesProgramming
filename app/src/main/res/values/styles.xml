@@ -4,6 +4,12 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#006699</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">#006699</item>
+    </style>
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">#006699</item>
+        <item name="android:width">120dp</item>
+        <item name="android:textColor">#006699</item>
+        <item name="android:textColorPrimary">#006699</item>
     </style>
 </resources>

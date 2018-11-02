@@ -14,12 +14,10 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Chronometer;
@@ -61,7 +59,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     Vibrator vibrator;
     FusedLocationProviderClient mLocation;
     LocationCallback mLocationCallback;
-    long elapsedTime;
+    float elapsedTime;
     boolean ready;
 
     LatLng previousLocation;
@@ -70,6 +68,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     double previousAltitude;
     float previousDistance;
     SlotWalk slot;
+    float totalDistance;
+    float currentSpeed;
 
     private XMLManagerWalk XMLManager;
     private final String WALKSXMLFILE = "simpleWalks.xml";
@@ -80,13 +80,15 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_walk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Intent i = getIntent();
+        activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra("simpleWalkList");
+
         running = false;
         XMLManager = new XMLManagerWalk();
-        activitiesList = new ArrayList<SimpleWalk>();
-        checkWalks();
+        //activitiesList = new ArrayList<SimpleWalk>();
+        //checkWalks();
         getName();
-
-
 
         cancelbtn = (FloatingActionButton) findViewById(R.id.cancelbtn);
         pausebtn = (FloatingActionButton) findViewById(R.id.pausebtn);
@@ -109,15 +111,13 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+        /*time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
                 elapsedTime = chronometer.getBase() - SystemClock.elapsedRealtime();
                 elapsedTime = (elapsedTime * -1) / 1000;
-                if (elapsedTime % 5 == 0) {
-                }
             }
-        });
+        });*/
         mLocation = LocationServices.getFusedLocationProviderClient(this);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -128,8 +128,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     previousAltitude = locationResult.getLastLocation().getAltitude();
                     previousLocation = new LatLng(locationResult.getLastLocation().getLongitude(),
                             locationResult.getLastLocation().getLatitude());
-                    slot = new SlotWalk(previousAltitude, previousDistance, previousLocation,
-                            previousSteps, previousTime);
+                    slot = new SlotWalk(previousAltitude, previousDistance, previousLocation.longitude,
+                            previousLocation.latitude, previousSteps, previousTime);
                 }
                 ready = true;//gps ready
             }
@@ -140,12 +140,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        time.stop();
-                        mLocation.removeLocationUpdates(mLocationCallback);
                         vibrator.vibrate(500);
-                        sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
-                        running = false;
-                        /*VOLVER A LA PANTALLA ANTERIOR*/
+                        pauseWalk();
+                        confirmCancel();
                     }
                 });
         pausebtn.setOnClickListener(
@@ -154,23 +151,16 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     public void onClick(View view) {
                         if (!running) {
                             if (ready) {
-                                time.start();
                                 vibrator.vibrate(500);
-                                simpleWalk.startWalk(slot);
-                                checkLocationPermission();
-                                sensorManager.registerListener(WalkActivity.this, stepperSensor, SensorManager.SENSOR_DELAY_NORMAL);
-                                running = !running;
+                                startWalk();
                             } else {
                                 Toast toast;
                                 toast = Toast.makeText(WalkActivity.this, "Waiting for GPS signal", Toast.LENGTH_SHORT);
                                 toast.show();
                             }
                         } else {
-                            mLocation.removeLocationUpdates(mLocationCallback);
                             vibrator.vibrate(500);
-                            time.stop();
-                            sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
-                            running = !running;
+                            pauseWalk();
                         }
                     }
                 });
@@ -178,11 +168,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
-                        mLocation.removeLocationUpdates(mLocationCallback);
                         vibrator.vibrate(500);
-                        getLastPosition();
-                        running = !running;
+                        pauseWalk();
+                        confirmFinish();
                     }
                 });
 
@@ -190,7 +178,10 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     private SlotWalk prepareData(Location location){
         double altit = location.getAltitude();
-        altitude.setText(altit+"m");
+
+        elapsedTime = time.getBase() - SystemClock.elapsedRealtime();
+        elapsedTime = (elapsedTime * -1) / 1000;
+
         float slotTime = elapsedTime-previousTime;
 
         LatLng currentLocation =new LatLng(location.getLongitude(),
@@ -201,12 +192,21 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 currentLocation.longitude,currentLocation.latitude, result);
         float slotDistance = result[0];
 
+        totalDistance += slotDistance;
+
         long slotSteps = stepCounter-previousSteps;
 
-        previousSteps = slotSteps;
+        previousSteps = stepCounter;
         previousLocation = currentLocation;
-        previousTime = slotTime;
-        return new SlotWalk(altit,slotDistance,currentLocation, slotSteps, slotTime);
+        previousTime = elapsedTime;
+        currentSpeed = (slotDistance / (elapsedTime))*((float)3.6);
+        String aux = String.format("Distance: %.2fm",totalDistance);
+        distance.setText(aux);
+        aux = String.format("Speed: %.2fkm/h",currentSpeed);
+        speed.setText(aux);
+        aux = String.format("Altitude: %.2fm",altit);
+        altitude.setText(aux);
+        return new SlotWalk(altit,slotDistance,currentLocation.longitude,currentLocation.latitude, slotSteps, slotTime);
     }
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -304,8 +304,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     private void getName(){
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
-        View mView = layoutInflaterAndroid.inflate(R.layout.pop_up, null);
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_name, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        alert.setTitle("Walk name");
         alert.setView(mView);
         final EditText userInputDialogEditText = (EditText) mView.findViewById(R.id.userInputDialog);
         alert
@@ -334,6 +335,93 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         AlertDialog alertDialogAndroid = alert.create();
         alertDialogAndroid.show();
+    }
+
+    private void confirmCancel(){
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
+        View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_confirm, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        alert.setTitle("Cancel");
+        alert.setView(mView);
+        ((TextView) mView.findViewById(R.id.message)).setText("Do you wan to cancel?");
+        alert
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+                        cancelWalk();
+                    }
+                })
+
+                .setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                //dialogBox.cancel();
+                            startWalk();
+                            }
+                        });
+
+        AlertDialog alertDialogAndroid = alert.create();
+        alertDialogAndroid.show();
+    }
+    private void confirmFinish(){
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
+        View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_confirm, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        alert.setTitle("Finish");
+        alert.setView(mView);
+        ((TextView) mView.findViewById(R.id.message)).setText("Do you wan to finish?");
+        alert
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+                        finishWalk();
+                        Intent i = new Intent(WalkActivity.this,StatisticsActivity.class);
+                        startActivity(i);
+                    }
+                })
+
+                .setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                //dialogBox.cancel();
+                            startWalk();
+                            }
+                        });
+
+        AlertDialog alertDialogAndroid = alert.create();
+        alertDialogAndroid.show();
+    }
+
+    private void cancelWalk(){
+        time.stop();
+        mLocation.removeLocationUpdates(mLocationCallback);
+        sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
+        running = false;
+        finish();
+    }
+
+    private void pauseWalk(){
+        mLocation.removeLocationUpdates(mLocationCallback);
+        time.stop();
+        sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
+        pausebtn.setImageResource(R.drawable.play);
+        running = false;
+    }
+
+    private void startWalk(){
+        time.start();
+        simpleWalk.startWalk(slot);
+        checkLocationPermission();
+        sensorManager.registerListener(WalkActivity.this, stepperSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        running = true;
+        pausebtn.setImageResource(R.drawable.pause);
+    }
+
+    private void finishWalk(){
+        mLocation.removeLocationUpdates(mLocationCallback);
+        vibrator.vibrate(500);
+        getLastPosition();
+        running = !running;
     }
 
 
