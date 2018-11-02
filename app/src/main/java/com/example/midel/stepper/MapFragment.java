@@ -40,8 +40,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         simpleWalk = (SimpleWalk) getArguments().getSerializable("simpleWalk");
-        //radGrp = findViewById(R.id.grupoRadioMapType);
         View rootView = inflater.inflate(R.layout.map_fragment, container, false);
+        radGrp = (RadioGroup)rootView.findViewById(R.id.grupoRadioMapType);
+
 
         mMap = (MapView) rootView.findViewById(R.id.mapView);
         mMap.onCreate(savedInstanceState);
@@ -100,7 +101,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
         Polyline polyline = googleMap.addPolyline(pLoptions);
         googleMap.animateCamera(cu);
-        //radGrp.setOnCheckedChangeListener(new radioGroupCheckedChanged() );
+        radGrp.setOnCheckedChangeListener(new radioGroupCheckedChanged() );
     }
 
     class radioGroupCheckedChanged implements RadioGroup.OnCheckedChangeListener {
