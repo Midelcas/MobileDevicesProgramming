@@ -60,7 +60,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     Vibrator vibrator;
     FusedLocationProviderClient mLocation;
     LocationCallback mLocationCallback;
-    long elapsedTime;
+    float elapsedTime;
     boolean ready;
 
     LatLng previousLocation;
@@ -189,7 +189,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         double altit = location.getAltitude();
         altitude.setText(altit+"m");
         float slotTime = elapsedTime-previousTime;
-
         LatLng currentLocation =new LatLng(location.getLongitude(),
                 location.getLatitude());
 
@@ -202,7 +201,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         previousSteps = slotSteps;
         previousLocation = currentLocation;
-        previousTime = slotTime;
+        previousTime = elapsedTime;
         return new SlotWalk(altit,slotDistance,currentLocation, slotSteps, slotTime);
     }
     @Override

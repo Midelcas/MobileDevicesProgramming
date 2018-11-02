@@ -3,7 +3,6 @@ package com.example.midel.stepper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -94,7 +93,10 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         int i =0;
-
+        String name;
+        Intent intent=new Intent(MainActivity.this, StatisticsActivity.class);
+        intent.putExtra("position",position);
+        startActivity(intent);
         /*CAMBIAR A PANTALLA DE ESTADISTICAS*/
     }
 
