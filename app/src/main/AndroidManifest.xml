@@ -19,8 +19,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".WalkActivity"></activity>
+        <activity android:name=".StatisticsActivity"></activity>
     </application>
 
 </manifest>

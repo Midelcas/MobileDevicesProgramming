@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int i =0;
-
+        Intent i = new Intent(MainActivity.this,StatisticsActivity.class);
+        startActivity(i);
         /*CAMBIAR A PANTALLA DE ESTADISTICAS*/
     }
 
