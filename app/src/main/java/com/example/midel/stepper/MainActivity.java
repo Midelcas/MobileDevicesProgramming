@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent i = new Intent(MainActivity.this,StatisticsActivity.class);
+        i.putExtra("simpleWalk", activitiesList.get(position));
         startActivity(i);
         /*CAMBIAR A PANTALLA DE ESTADISTICAS*/
     }

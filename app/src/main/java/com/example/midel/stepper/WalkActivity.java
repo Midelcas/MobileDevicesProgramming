@@ -372,7 +372,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     public void onClick(DialogInterface dialogBox, int id) {
                         finishWalk();
                         Intent i = new Intent(WalkActivity.this,StatisticsActivity.class);
+                        i.putExtra("simpleWalk", simpleWalk);
                         startActivity(i);
+                        finish();
                     }
                 })
 
@@ -415,9 +417,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     private void finishWalk(){
         mLocation.removeLocationUpdates(mLocationCallback);
-        vibrator.vibrate(500);
         getLastPosition();
-        running = !running;
+        running = false;
     }
 
 

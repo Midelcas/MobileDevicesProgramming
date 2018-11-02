@@ -1,6 +1,7 @@
 package com.example.midel.stepper;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -8,8 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 
+
 public class StatisticsActivity extends AppCompatActivity {
 
+    SimpleWalk simpleWalk;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +25,9 @@ public class StatisticsActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.stats));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.route));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        Intent i = getIntent();
+        simpleWalk = (SimpleWalk)i.getSerializableExtra("simpleWalk");
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter
