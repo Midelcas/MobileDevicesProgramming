@@ -18,8 +18,10 @@ public class SimpleWalk implements Serializable {
     private double mMaxAltitude;
     private double mMinAltitude;
     private double mEndingAltitude;
-    private LatLng mInitialLocation;
-    private LatLng mEndingLocation;
+    private double mInitialLongitude;
+    private double mInitialLatitude;
+    private double mEndingLongitude;
+    private double mEndingLatitude;
     private ArrayList<SlotWalk> mRouteList;
 
 
@@ -28,8 +30,10 @@ public class SimpleWalk implements Serializable {
         mName = aName;
         mRouteList = new ArrayList<SlotWalk>();
         mInitialAltitude = 0;
-        mInitialLocation = null;
-        mEndingLocation = null;
+        mInitialLongitude = 0;
+        mInitialLatitude = 0;
+        mEndingLongitude = 0;
+        mEndingLatitude = 0;
         mTotalTime = 0;
         mTotalSteps = 0;
         mTotalDistance = 0;
@@ -50,19 +54,23 @@ public class SimpleWalk implements Serializable {
     public float getTotalTime(){ return mTotalTime;}
     public long getTotalSteps(){ return mTotalSteps;}
     public double getTotalDistance(){ return mTotalDistance;}
-    public LatLng getEndingLocation() { return mEndingLocation;}
-    public LatLng getInitialLocation() { return mInitialLocation;}
+    public double getEndingLongitude() { return mEndingLongitude;}
+    public double getEndingLatitude() { return mEndingLatitude;}
+    public double getInitialLongitude() { return mInitialLongitude;}
+    public double getInitialLatitude() { return mInitialLatitude;}
     public ArrayList<SlotWalk> getRouteList() { return mRouteList;}
 
     public void startWalk(SlotWalk aSlot){
         mInitialAltitude = aSlot.getAltitude();
-        mInitialLocation = aSlot.getLocation();
+        mInitialLatitude = aSlot.getLatitude();
+        mInitialLongitude = aSlot.getLongitude();
         mMinAltitude = aSlot.getAltitude();
         mMaxAltitude = aSlot.getAltitude();
         addSlot(aSlot);
     }
     public void endWalk(SlotWalk aSlot){
-        mEndingLocation = aSlot.getLocation();
+        mEndingLatitude = aSlot.getLatitude();
+        mEndingLongitude = aSlot.getLongitude();
         mEndingAltitude = aSlot.getAltitude();
         addSlot(aSlot);
     }

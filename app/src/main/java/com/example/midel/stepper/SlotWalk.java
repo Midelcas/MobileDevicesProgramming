@@ -7,21 +7,24 @@ import java.io.Serializable;
 public class SlotWalk implements Serializable {
     private double mAltitude;
     private float mDistance;
-    private LatLng mLocation;
+    private double mLongitude;
+    private double mLatitude;
     private long mSteps;
     private float mTime;
 
-    public SlotWalk(double aAltitude, float aDistance, LatLng aLocation, long aSteps, float aTime){
+    public SlotWalk(double aAltitude, float aDistance, double aLongitude, double aLatitude, long aSteps, float aTime){
         mAltitude=aAltitude;
         mDistance=aDistance;
-        mLocation=aLocation;
+        mLongitude = aLongitude;
+        mLatitude = aLatitude;
         mSteps=aSteps;
         mTime=aTime;
     }
 
     public double getAltitude(){ return mAltitude;}
     public float getDistance(){ return mDistance;}
-    public LatLng getLocation(){ return mLocation;}
+    public double getLongitude(){ return mLongitude;}
+    public double getLatitude(){ return mLatitude;}
     public long getSteps(){ return mSteps;}
     public float getTime(){ return mTime;}
 

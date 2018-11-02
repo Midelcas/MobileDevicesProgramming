@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                 Intent i = new Intent(MainActivity.this,WalkActivity.class);
                 // Put as extras the coordinates string and the camera name corresponding to the currently
                 // selected camera:
-                //i.putExtra("simpleWalkList", activitiesList );
+                i.putExtra("simpleWalkList", activitiesList );
                 startActivity(i);
 
                 /*PASAR A PANTALLA DE PASEO*/

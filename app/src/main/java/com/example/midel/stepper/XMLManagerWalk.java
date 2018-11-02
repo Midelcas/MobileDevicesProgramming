@@ -84,7 +84,7 @@ public class XMLManagerWalk {
             slotWalkNode.appendChild(distance);
 
             Element location = doc.createElement("location");
-            location.appendChild(doc.createTextNode(slotWalkList.get(i).getLocation().longitude+","+slotWalkList.get(i).getLocation().latitude));
+            location.appendChild(doc.createTextNode(slotWalkList.get(i).getLongitude()+","+slotWalkList.get(i).getLatitude()));
             slotWalkNode.appendChild(location);
 
             Element steps = doc.createElement("steps");
@@ -176,7 +176,7 @@ public class XMLManagerWalk {
                     Element timeNode = (Element)timeList.item(0);
                     float time = Float.parseFloat(timeNode.getTextContent());
 
-                    SlotWalk slotWalk = new SlotWalk(altitude, distance, location, steps, time);
+                    SlotWalk slotWalk = new SlotWalk(altitude, distance, location.longitude, location.latitude, steps, time);
                     if (j == 0) {
                         simpleWalk.startWalk(slotWalk);
                     } else if(j== (slotWalkList.getLength()-1)){
