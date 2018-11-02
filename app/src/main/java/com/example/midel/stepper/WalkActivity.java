@@ -86,8 +86,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         running = false;
         XMLManager = new XMLManagerWalk();
-        //activitiesList = new ArrayList<SimpleWalk>();
-        //checkWalks();
         getName();
 
         cancelbtn = (FloatingActionButton) findViewById(R.id.cancelbtn);
