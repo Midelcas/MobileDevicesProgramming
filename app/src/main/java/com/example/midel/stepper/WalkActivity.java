@@ -382,10 +382,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
-                                dialogBox.cancel();
-                                simpleWalk = new SimpleWalk("New Walk", null);
-                                setTitle(simpleWalk.getName());
-                                activitiesList.add(simpleWalk);
+                                cancelWalk();
+                                finish();
                             }
                         });
 
