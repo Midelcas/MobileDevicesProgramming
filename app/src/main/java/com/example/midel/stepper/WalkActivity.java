@@ -122,8 +122,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     simpleWalk.addSlot(prepareData(locationResult.getLastLocation()));
                 } else {
                     previousAltitude = locationResult.getLastLocation().getAltitude();
-                    previousLocation = new LatLng(locationResult.getLastLocation().getLongitude(),
-                            locationResult.getLastLocation().getLatitude());
+                    previousLocation = new LatLng(locationResult.getLastLocation().getLatitude(),
+                            locationResult.getLastLocation().getLongitude());
                     slot = new SlotWalk(previousAltitude, previousDistance, previousLocation.longitude,
                             previousLocation.latitude, previousSteps, previousTime);
                 }
@@ -180,12 +180,12 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         float slotTime = elapsedTime-previousTime;
 
-        LatLng currentLocation =new LatLng(location.getLongitude(),
-                location.getLatitude());
+        LatLng currentLocation =new LatLng(location.getLatitude(),
+                location.getLongitude());
 
         float[] result={0};
-        Location.distanceBetween(previousLocation.longitude,previousLocation.latitude ,
-                currentLocation.longitude,currentLocation.latitude, result);
+        Location.distanceBetween(previousLocation.latitude,previousLocation.longitude ,
+                currentLocation.latitude,currentLocation.longitude, result);
         float slotDistance = result[0];
 
         totalDistance += slotDistance;

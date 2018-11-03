@@ -168,7 +168,7 @@ public class XMLManager {
                         NodeList locationList = slotNode.getElementsByTagName("location");
                         Element locationNode = (Element)locationList.item(0);
                         String[] locationString = locationNode.getTextContent().split("\n")[0].split(",");
-                        LatLng location = new LatLng(Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]));
+                        LatLng location = new LatLng(Double.parseDouble(locationString[1]), Double.parseDouble(locationString[0]));
 
                         NodeList stepsList =  slotNode.getElementsByTagName("steps");
                         Element stepsNode = (Element) stepsList.item(0);
