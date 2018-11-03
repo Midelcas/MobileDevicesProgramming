@@ -73,6 +73,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLongitude());
         Marker mk = googleMap.addMarker(new MarkerOptions().position(start).title("Start"));
         mk.showInfoWindow(); // Shows the name of the camera in the marker
+        mk.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.start_run));
         Marker mk1 = googleMap.addMarker(new MarkerOptions().position(finish).title("Finish"));
         mk1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.finish_run));
         mk1.showInfoWindow();
@@ -88,7 +89,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         }
 
 //Bounds padding here
-        int padding = 100;
+        int padding = 200;
 
         //Create bounds here
         LatLngBounds bounds = builder.build();
