@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Stepper</string>
     <string name="title_activity_main">Stepper</string>
+    <string name="map">Map</string>
+    <string name="hybrid">Hybrid</string>
+    <string name="satellite">Satellite</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

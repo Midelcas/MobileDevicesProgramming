@@ -4,7 +4,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#006699</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">#006699</item>
+        <item name="colorAccent">#003099</item>
     </style>
     <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">#006699</item>

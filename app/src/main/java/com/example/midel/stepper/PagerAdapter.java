@@ -1,15 +1,18 @@
 package com.example.midel.stepper;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
-
-    public PagerAdapter(FragmentManager fm, int NumOfTabs) {
+    Bundle data;
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, SimpleWalk simpleWalk) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
+        data = new Bundle();
+        data.putSerializable("simpleWalk", simpleWalk);
     }
 
     @Override
@@ -17,13 +20,16 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                TabFragment1 tab1 = new TabFragment1();
+                ListFragment tab1 = new ListFragment();
+                tab1.setArguments(data);
                 return tab1;
             case 1:
-                TabFragment2 tab2 = new TabFragment2();
+                ChartFragment tab2 = new ChartFragment();
+                tab2.setArguments(data);
                 return tab2;
             case 2:
-                TabFragment3 tab3 = new TabFragment3();
+                MapFragment tab3 = new MapFragment();
+                tab3.setArguments(data);
                 return tab3;
             default:
                 return null;
