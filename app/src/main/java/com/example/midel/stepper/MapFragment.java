@@ -66,11 +66,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         LatLng start = new LatLng(
-                simpleWalk.getRouteList().get(0).getLongitude(),
-                simpleWalk.getRouteList().get(0).getLatitude());
+                simpleWalk.getRouteList().get(0).getLatitude(),
+                simpleWalk.getRouteList().get(0).getLongitude());
         LatLng finish = new LatLng(
-                simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLongitude(),
-                simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLatitude());
+                simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLatitude(),
+                simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLongitude());
         Marker mk = googleMap.addMarker(new MarkerOptions().position(start).title("Start"));
         mk.showInfoWindow(); // Shows the name of the camera in the marker
         Marker mk1 = googleMap.addMarker(new MarkerOptions().position(finish).title("Finish"));
@@ -96,8 +96,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         PolylineOptions pLoptions = new PolylineOptions().color(0xFF0000FF);
         for(int i=0; i< simpleWalk.getRouteList().size(); i++){
-            pLoptions.add(new LatLng(simpleWalk.getRouteList().get(i).getLongitude(),
-                    simpleWalk.getRouteList().get(i).getLatitude()));
+            pLoptions.add(new LatLng(simpleWalk.getRouteList().get(i).getLatitude(),
+                    simpleWalk.getRouteList().get(i).getLongitude()));
         }
         Polyline polyline = googleMap.addPolyline(pLoptions);
         googleMap.animateCamera(cu);
