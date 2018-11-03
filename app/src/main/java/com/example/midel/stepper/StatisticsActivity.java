@@ -33,7 +33,7 @@ public class StatisticsActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         Intent i = getIntent();
-        simpleWalk = (SimpleWalk)i.getSerializableExtra("simpleWalk");
+        simpleWalk = (SimpleWalk)i.getSerializableExtra(getString(R.string.simpleWalk));
         setTitle(simpleWalk.getName());
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);

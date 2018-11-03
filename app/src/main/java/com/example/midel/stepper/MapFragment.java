@@ -39,7 +39,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        simpleWalk = (SimpleWalk) getArguments().getSerializable("simpleWalk");
+        simpleWalk = (SimpleWalk) getArguments().getSerializable(getString(R.string.simpleWalk));
         View rootView = inflater.inflate(R.layout.map_fragment, container, false);
         radGrp = (RadioGroup)rootView.findViewById(R.id.grupoRadioMapType);
 
@@ -71,10 +71,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         LatLng finish = new LatLng(
                 simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLatitude(),
                 simpleWalk.getRouteList().get((simpleWalk.getRouteList().size()-1)).getLongitude());
-        Marker mk = googleMap.addMarker(new MarkerOptions().position(start).title("Start"));
+        Marker mk = googleMap.addMarker(new MarkerOptions().position(start).title(getString(R.string.start)));
         mk.showInfoWindow(); // Shows the name of the camera in the marker
         mk.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.start_run));
-        Marker mk1 = googleMap.addMarker(new MarkerOptions().position(finish).title("Finish"));
+        Marker mk1 = googleMap.addMarker(new MarkerOptions().position(finish).title(getString(R.string.finish)));
         mk1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.finish_run));
         mk1.showInfoWindow();
 

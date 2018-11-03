@@ -1,29 +1,37 @@
 package com.example.midel.stepper;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ListView.OnItemClickListener{
     private ListView listView;
-    private ArrayAdapter adapter;
+    private SimpleWalkAdapter adapter;
     private ArrayList<SimpleWalk> activitiesList;
-    //private com.example.midel.stepper.XMLManager XMLManager;
-    private final String WALKSXMLFILE = "simpleWalks.xml";
-
+    int pos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
 
 
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, activitiesList);
+        adapter = new SimpleWalkAdapter(this, activitiesList);
         listView.setAdapter(adapter);
     }
 
@@ -64,26 +72,26 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
     public void checkWalks(){
         try {
-            FileInputStream is = XMLManager.XMLWalk.read_File(getFilesDir(), WALKSXMLFILE);
+            FileInputStream is = XMLManager.XMLWalk.read_File(getFilesDir(), getString(R.string.WALKSXMLFILE));
             XMLManager.XMLWalk.parse_XML(is,activitiesList);
         }catch(IOException e){
             Toast toast;
-            toast = Toast.makeText(this,"Error while reading xml",Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this,getString(R.string.error_reading_xml),Toast.LENGTH_SHORT);
             toast.show();
         }catch(ParseException e){
             Toast toast;
-            toast = Toast.makeText(this,"Error while parsing xml",Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this,getString(R.string.error_reading_xml),Toast.LENGTH_SHORT);
             toast.show();
         }catch(Exception e){
             Toast toast;
-            toast = Toast.makeText(this,"Error while parsing xml",Toast.LENGTH_SHORT);
+            toast = Toast.makeText(this,getString(R.string.error_reading_xml),Toast.LENGTH_SHORT);
             toast.show();
         }
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent i = new Intent(MainActivity.this,StatisticsActivity.class);
-        i.putExtra("simpleWalk", activitiesList.get(position));
+        i.putExtra(getString(R.string.simpleWalk), activitiesList.get(position));
         startActivity(i);
     }
 
@@ -99,4 +107,79 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         vi.startAnimation(anim);
     }
 
+    public void confirmRemove(){
+
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
+        View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_confirm, null);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+        alert.setTitle(getString(R.string.remove));
+        alert.setView(mView);
+        ((TextView) mView.findViewById(R.id.message)).setText(getString(R.string.want_remove)+ activitiesList.get(pos).getName()+"?");
+        alert
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+                        activitiesList.remove(pos);
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+
+                .setNegativeButton(getString(R.string.no),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+
+                            }
+                        });
+
+        AlertDialog alertDialogAndroid = alert.create();
+        alertDialogAndroid.show();
+    }
+
+    public class SimpleWalkAdapter extends ArrayAdapter<SimpleWalk> {
+        private ArrayList<SimpleWalk> items;
+        private Context mContext;
+
+        SimpleWalkAdapter(Context context, ArrayList<SimpleWalk> activities ) {
+            super( context, 0, activities );
+            items = activities;
+            mContext = context;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent ) {
+            //LayoutInflater inflater = getLayoutInflater();
+            //View row = inflater.inflate(R.layout.country_list_item, parent, false);
+            View newView = convertView;
+
+            // This approach can be improved for performance
+            if ( newView == null ) {
+                LayoutInflater inflater = (LayoutInflater) mContext
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                newView = inflater.inflate(R.layout.simple_walk_list, parent, false);
+                ImageButton btn = (ImageButton)newView.findViewById(R.id.btn);
+                btn.setTag(position);
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        pos = (Integer) view.getTag();
+                        confirmRemove();
+                    }
+                });
+            }
+            //-----
+
+            TextView name = (TextView) newView.findViewById(R.id.name);
+            TextView date = (TextView) newView.findViewById(R.id.date);
+
+            SimpleWalk simpleWalk = items.get(position);
+            SimpleDateFormat formatter = new SimpleDateFormat(getString(R.string.dateformat), Locale.ENGLISH);
+            String walkDate = formatter.format(simpleWalk.getDate());
+
+            name.setText(simpleWalk.getName());
+            date.setText(walkDate);
+            return newView;
+        }
+
+    }
 }

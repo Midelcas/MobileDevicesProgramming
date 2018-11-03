@@ -86,7 +86,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     int previousStatus;
 
     //private com.example.midel.stepper.XMLManager XMLManager;
-    private final String WALKSXMLFILE = "simpleWalks.xml";
+    //private final String WALKSXMLFILE = "simpleWalks.xml";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +96,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         setSupportActionBar(toolbar);
 
         Intent i = getIntent();
-        activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra("simpleWalkList");
+        activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra(getString(R.string.simpleWalkList));
         currentStatus=STOPPED;
         //running = false;
         getName();
@@ -179,14 +179,16 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             pausebtn.setVisibility(View.VISIBLE);
                             vibrator.vibrate(500);
                         }else{
-                            toast = Toast.makeText(WalkActivity.this, "Waiting for GPS signal", Toast.LENGTH_SHORT);
+                            toast = Toast.makeText(WalkActivity.this, getString(R.string.gps_wait), Toast.LENGTH_SHORT);
                             toast.show();
                         }
                         break;
                     case CANCEL:
-                        pauseWalk();
-                        previousStatus=currentStatus;
-                        currentStatus=STOPPED;
+                        if(ready) {
+                            pauseWalk();
+                            previousStatus = currentStatus;
+                            currentStatus = STOPPED;
+                        }
                         confirmCancel();
                         vibrator.vibrate(500);
                         break;
@@ -198,7 +200,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             confirmFinish();
                             vibrator.vibrate(500);
                         }else{
-                            toast = Toast.makeText(WalkActivity.this, "No walk started", Toast.LENGTH_SHORT);
+                            toast = Toast.makeText(WalkActivity.this, getString(R.string.no_walk), Toast.LENGTH_SHORT);
                             toast.show();
                         }
                         break;
@@ -227,7 +229,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             confirmFinish();
                             vibrator.vibrate(500);
                         }else{
-                            toast = Toast.makeText(WalkActivity.this, "No walk started", Toast.LENGTH_SHORT);
+                            toast = Toast.makeText(WalkActivity.this, getString(R.string.no_walk), Toast.LENGTH_SHORT);
                             toast.show();
                         }
                         break;
@@ -261,11 +263,11 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         previousLocation = currentLocation;
         previousTime = elapsedTime;
         currentSpeed = (slotDistance / (elapsedTime))*((float)3.6);
-        String aux = String.format("Distance: %.2fm",totalDistance);
+        String aux = String.format(getString(R.string.distanceformat),totalDistance);
         distance.setText(aux);
-        aux = String.format("Speed: %.2fkm/h",currentSpeed);
+        aux = String.format(getString(R.string.speedformat),currentSpeed);
         speed.setText(aux);
-        aux = String.format("Altitude: %.2fm",altit);
+        aux = String.format(getString(R.string.altitudeformat),altit);
         altitude.setText(aux);
         return new SlotWalk(altit,slotDistance,currentLocation.longitude,currentLocation.latitude, slotSteps, slotTime);
     }
@@ -273,7 +275,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent sensorEvent) {
         if((sensorEvent.sensor.equals(stepperSensor))&&(currentStatus==RUNNING)) {
             stepCounter++;
-            steps.setText("Steps:"+stepCounter);
+            steps.setText(getString(R.string.step)+stepCounter);
         }
 
     }
@@ -292,7 +294,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             time.stop();
                             sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
                             simpleWalk.endWalk(prepareData(location));
-                            try{XMLManager.XMLWalk.saveXMLToFile(XMLManager.XMLWalk.write_XML(activitiesList),getFilesDir(), WALKSXMLFILE);}catch(Exception e){}
+                            try{XMLManager.XMLWalk.saveXMLToFile(XMLManager.XMLWalk.write_XML(activitiesList),getFilesDir(), getString(R.string.WALKSXMLFILE));}catch(Exception e){}
                         }
                     }
                 });
@@ -326,6 +328,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         switch (requestCode) {
             case PERMISSION_REQUEST_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkLocationPermission();
                 } else {
                     finish();
                 }
@@ -339,39 +342,20 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         // In this app we do nothing if sensor's accuracy changes
     }
 
-    public void checkWalks(){
-        try {
-            FileInputStream is = XMLManager.XMLWalk.read_File(getFilesDir(), WALKSXMLFILE);
-            XMLManager.XMLWalk.parse_XML(is,activitiesList);
-        }catch(IOException e){
-            Toast toast;
-            toast = Toast.makeText(this,"Error while reading xml",Toast.LENGTH_SHORT);
-            toast.show();
-        }catch(ParseException e){
-            Toast toast;
-            toast = Toast.makeText(this,"Error while parsing xml",Toast.LENGTH_SHORT);
-            toast.show();
-        }catch(Exception e){
-            Toast toast;
-            toast = Toast.makeText(this,"Error while parsing xml",Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
-
     private void getName(){
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
         View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_name, null);
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        alert.setTitle("Walk name");
+        alert.setTitle(getString(R.string.walk_name));
         alert.setView(mView);
         final EditText userInputDialogEditText = (EditText) mView.findViewById(R.id.userInputDialog);
         alert
                 .setCancelable(false)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
                         String name = userInputDialogEditText.getText().toString();
                         if(name.length()==0){
-                            name = "New Walk";
+                            name = getString(R.string.new_walk);
                         }
                         simpleWalk = new SimpleWalk(name, null);
                         setTitle(simpleWalk.getName());
@@ -379,7 +363,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     }
                 })
 
-                .setNegativeButton("Cancel",
+                .setNegativeButton(getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
                                 cancelWalk();
@@ -395,18 +379,18 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
         View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_confirm, null);
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        alert.setTitle("Cancel");
+        alert.setTitle(getString(R.string.cancel));
         alert.setView(mView);
-        ((TextView) mView.findViewById(R.id.message)).setText("Do you wan to cancel?");
+        ((TextView) mView.findViewById(R.id.message)).setText(getString(R.string.want_cancel));
         alert
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
                         cancelWalk();
                     }
                 })
 
-                .setNegativeButton("No",
+                .setNegativeButton(getString(R.string.no),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
                                 switch (previousStatus){
@@ -427,22 +411,22 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
         View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_confirm, null);
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
-        alert.setTitle("Finish");
+        alert.setTitle(getString(R.string.finish));
         alert.setView(mView);
-        ((TextView) mView.findViewById(R.id.message)).setText("Do you want to finish?");
+        ((TextView) mView.findViewById(R.id.message)).setText(getString(R.string.want_finish));
         alert
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
                         finishWalk();
                         Intent i = new Intent(WalkActivity.this,StatisticsActivity.class);
-                        i.putExtra("simpleWalk", simpleWalk);
+                        i.putExtra(getString(R.string.simpleWalk), simpleWalk);
                         startActivity(i);
                         finish();
                     }
                 })
 
-                .setNegativeButton("No",
+                .setNegativeButton(getString(R.string.no),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
                                 //dialogBox.cancel();
