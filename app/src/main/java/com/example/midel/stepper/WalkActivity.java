@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.media.Image;
 import android.os.Build;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -21,7 +22,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -58,6 +62,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     TextView speed;
     TextView steps;
     TextView distance;
+    ImageView stepperimage;
     //boolean running;
     private SensorManager sensorManager;
     Sensor stepperSensor;
@@ -96,6 +101,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         //running = false;
         getName();
 
+        stepperimage = (ImageView) findViewById(R.id.stepperimage);
         cancelbtn = (FloatingActionButton) findViewById(R.id.cancelbtn);
         pausebtn = (FloatingActionButton) findViewById(R.id.pausebtn);
         playbtn = (FloatingActionButton) findViewById(R.id.playbtn);
@@ -119,6 +125,20 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         mLocation = LocationServices.getFusedLocationProviderClient(this);
+        time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                long seconds = time.getBase() - SystemClock.elapsedRealtime();
+                seconds = (seconds * -1) / 1000;
+                if(seconds%2==0){
+                    stepperimage.setScaleX(-1);
+                }else{
+                    stepperimage.setScaleX(1);
+                }
+
+
+            }
+        });
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {

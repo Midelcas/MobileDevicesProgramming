@@ -36,18 +36,11 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this,WalkActivity.class);
-                // Put as extras the coordinates string and the camera name corresponding to the currently
-                // selected camera:
                 i.putExtra("simpleWalkList", activitiesList );
                 startActivity(i);
-
-                /*PASAR A PANTALLA DE PASEO*/
             }
         });
 
-        /*LEER FICHERO DE ACTIVIDADES*/
-
-        //XMLManager = new XMLManager();
         activitiesList = new ArrayList<SimpleWalk>();
 
 
@@ -59,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, activitiesList);
         listView.setAdapter(adapter);
-         // This configuration can be done in XML
-
-        //listView.setEnabled(false);
     }
 
     @Override
@@ -95,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         Intent i = new Intent(MainActivity.this,StatisticsActivity.class);
         i.putExtra("simpleWalk", activitiesList.get(position));
         startActivity(i);
-        /*CAMBIAR A PANTALLA DE ESTADISTICAS*/
     }
 
     public void startAnimation() {
@@ -108,8 +97,6 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         anim.setFillAfter(true); // Needed to keep the result of the animation
         anim.setDuration(1000);
         vi.startAnimation(anim);
-
-        //scaleView(v, 0f, .6f);
     }
 
 }

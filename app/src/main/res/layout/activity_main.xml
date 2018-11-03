@@ -7,11 +7,11 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context=".MainActivity"
-    android:background="@drawable/stepperlogobackground">
+    tools:context=".MainActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="100dp"
+        android:background="#006699">
         <ImageView
             android:id="@+id/stepperimage"
             android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="380dp" />
+        android:layout_height="380dp"/>
 
 
     <android.support.design.widget.FloatingActionButton
@@ -32,6 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/plus"/>
 
 </LinearLayout>
