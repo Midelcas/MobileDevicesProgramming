@@ -1,6 +1,7 @@
 package com.example.midel.stepper;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,20 +39,26 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 
-public class WalkActivity extends AppCompatActivity implements SensorEventListener {
-
+public class WalkActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
+    private static final int RUNNING = 0;
+    private static final int STOPPED = 1;
+    private static final int RUN = 0;
+    private static final int STOP = 1;
+    private static final int FINISH = 2;
+    private static final int CANCEL = 3;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private SimpleWalk simpleWalk;
     private ArrayList<SimpleWalk> activitiesList;
     FloatingActionButton cancelbtn;
     FloatingActionButton pausebtn;
+    FloatingActionButton playbtn;
     FloatingActionButton finishbtn;
     PausableChronometer time;
     TextView altitude;
     TextView speed;
     TextView steps;
     TextView distance;
-    boolean running;
+    //boolean running;
     private SensorManager sensorManager;
     Sensor stepperSensor;
     long stepCounter;
@@ -60,6 +67,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     LocationCallback mLocationCallback;
     float elapsedTime;
     boolean ready;
+    Toast toast;
 
     LatLng previousLocation;
     long previousSteps;
@@ -69,6 +77,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     SlotWalk slot;
     float totalDistance;
     float currentSpeed;
+    int currentStatus;
+    int previousStatus;
 
     //private com.example.midel.stepper.XMLManager XMLManager;
     private final String WALKSXMLFILE = "simpleWalks.xml";
@@ -82,12 +92,13 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         Intent i = getIntent();
         activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra("simpleWalkList");
-
-        running = false;
+        currentStatus=STOPPED;
+        //running = false;
         getName();
 
         cancelbtn = (FloatingActionButton) findViewById(R.id.cancelbtn);
         pausebtn = (FloatingActionButton) findViewById(R.id.pausebtn);
+        playbtn = (FloatingActionButton) findViewById(R.id.playbtn);
         finishbtn = (FloatingActionButton) findViewById(R.id.finishbtn);
         time = (PausableChronometer) findViewById(R.id.time);
         altitude = (TextView) findViewById(R.id.altitude);
@@ -107,70 +118,94 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        /*time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            @Override
-            public void onChronometerTick(Chronometer chronometer) {
-                elapsedTime = chronometer.getBase() - SystemClock.elapsedRealtime();
-                elapsedTime = (elapsedTime * -1) / 1000;
-            }
-        });*/
         mLocation = LocationServices.getFusedLocationProviderClient(this);
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                if (running) {
-                    simpleWalk.addSlot(prepareData(locationResult.getLastLocation()));
-                } else {
-                    previousAltitude = locationResult.getLastLocation().getAltitude();
-                    previousLocation = new LatLng(locationResult.getLastLocation().getLatitude(),
-                            locationResult.getLastLocation().getLongitude());
-                    slot = new SlotWalk(previousAltitude, previousDistance, previousLocation.longitude,
-                            previousLocation.latitude, previousSteps, previousTime);
+                switch (currentStatus){
+                    case STOPPED:
+                        previousAltitude = locationResult.getLastLocation().getAltitude();
+                        previousLocation = new LatLng(locationResult.getLastLocation().getLatitude(),
+                                locationResult.getLastLocation().getLongitude());
+                        slot = new SlotWalk(previousAltitude, previousDistance, previousLocation.longitude,
+                                previousLocation.latitude, previousSteps, previousTime);
+                        break;
+                    case RUNNING:
+                        simpleWalk.addSlot(prepareData(locationResult.getLastLocation()));
+                        break;
                 }
                 ready = true;//gps ready
             }
         };
         checkLocationPermission();
 
-        cancelbtn.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        vibrator.vibrate(500);
-                        pauseWalk();
-                        confirmCancel();
-                    }
-                });
-        pausebtn.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (!running) {
-                            if (ready) {
-                                vibrator.vibrate(500);
-                                startWalk();
-                            } else {
-                                Toast toast;
-                                toast = Toast.makeText(WalkActivity.this, "Waiting for GPS signal", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        } else {
-                            vibrator.vibrate(500);
-                            pauseWalk();
-                        }
-                    }
-                });
-        finishbtn.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        vibrator.vibrate(500);
-                        pauseWalk();
-                        confirmFinish();
-                    }
-                });
-
+        cancelbtn.setOnClickListener(this);
+        pausebtn.setOnClickListener(this);
+        playbtn.setOnClickListener(this);
+        finishbtn.setOnClickListener(this);
     }
+
+    @SuppressLint("RestrictedApi")
+    private void statusChange(int action){
+        switch(currentStatus){
+            case STOPPED:
+                switch(action){
+                    case RUN:
+                        if(ready){
+                            startWalk();
+                            previousStatus=currentStatus;
+                            currentStatus = RUNNING;
+                            playbtn.setVisibility(View.GONE);
+                            pausebtn.setVisibility(View.VISIBLE);
+                            vibrator.vibrate(500);
+                        }else{
+                            toast = Toast.makeText(WalkActivity.this, "Waiting for GPS signal", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                        break;
+                    case CANCEL:
+                        pauseWalk();
+                        previousStatus=currentStatus;
+                        currentStatus=STOPPED;
+                        confirmCancel();
+                        vibrator.vibrate(500);
+                        break;
+                    case FINISH:
+                        pauseWalk();
+                        previousStatus=currentStatus;
+                        currentStatus=STOPPED;
+                        confirmFinish();
+                        vibrator.vibrate(500);
+                        break;
+                }
+                break;
+            case RUNNING:
+                switch(action){
+                    case STOP:
+                        pauseWalk();
+                        previousStatus=currentStatus;
+                        currentStatus=STOPPED;
+                        pausebtn.setVisibility(View.GONE);
+                        playbtn.setVisibility(View.VISIBLE);
+                        vibrator.vibrate(500);
+                        break;
+                    case CANCEL:
+                        previousStatus=currentStatus;
+                        confirmCancel();
+                        vibrator.vibrate(500);
+                        break;
+                    case FINISH:
+                        pauseWalk();
+                        previousStatus=currentStatus;
+                        currentStatus=STOPPED;
+                        confirmFinish();
+                        vibrator.vibrate(500);
+                        break;
+                }
+                break;
+        }
+    }
+
 
     private SlotWalk prepareData(Location location){
         double altit = location.getAltitude();
@@ -206,7 +241,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     }
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if((sensorEvent.sensor.equals(stepperSensor))&&running) {
+        if((sensorEvent.sensor.equals(stepperSensor))&&(currentStatus==RUNNING)) {
             stepCounter++;
             steps.setText("Steps:"+stepCounter);
         }
@@ -258,15 +293,10 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
-        //Check if permission request response is from Location
         switch (requestCode) {
             case PERMISSION_REQUEST_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //User granted permissions. Setup the scan settings
                 } else {
-                    //User denied Location permissions. Here you could warn the user that without
-                    //Location permissions the app is not able to scan for BLE devices
-                    //In this case we just close the app
                     finish();
                 }
                 return;
@@ -351,8 +381,14 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 .setNegativeButton("No",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
-                                //dialogBox.cancel();
-                            startWalk();
+                                switch (previousStatus){
+                                    case STOPPED:
+                                        statusChange(STOP);
+                                        break;
+                                    case RUNNING:
+                                        statusChange(RUN);
+                                        break;
+                                }
                             }
                         });
 
@@ -365,7 +401,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         alert.setTitle("Finish");
         alert.setView(mView);
-        ((TextView) mView.findViewById(R.id.message)).setText("Do you wan to finish?");
+        ((TextView) mView.findViewById(R.id.message)).setText("Do you want to finish?");
         alert
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -382,7 +418,14 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
                                 //dialogBox.cancel();
-                            startWalk();
+                                switch (previousStatus){
+                                    case STOPPED:
+                                        statusChange(STOP);
+                                        break;
+                                    case RUNNING:
+                                        statusChange(RUN);
+                                        break;
+                                }
                             }
                         });
 
@@ -394,7 +437,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         time.stop();
         mLocation.removeLocationUpdates(mLocationCallback);
         sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
-        running = false;
         finish();
     }
 
@@ -402,24 +444,36 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         mLocation.removeLocationUpdates(mLocationCallback);
         time.stop();
         sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
-        pausebtn.setImageResource(R.drawable.play);
-        running = false;
     }
 
     private void startWalk(){
         time.start();
         simpleWalk.startWalk(slot);
         checkLocationPermission();
-        sensorManager.registerListener(WalkActivity.this, stepperSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        running = true;
-        pausebtn.setImageResource(R.drawable.pause);
+        sensorManager.registerListener(WalkActivity.this, stepperSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     private void finishWalk(){
         mLocation.removeLocationUpdates(mLocationCallback);
         getLastPosition();
-        running = false;
     }
 
 
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()){
+            case R.id.pausebtn:
+                statusChange(STOP);
+                break;
+            case R.id.playbtn:
+                statusChange(RUN);
+                break;
+            case R.id.finishbtn:
+                statusChange(FINISH);
+                break;
+            case R.id.cancelbtn:
+                statusChange(CANCEL);
+                break;
+        }
+    }
 }
