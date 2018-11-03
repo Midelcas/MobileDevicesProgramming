@@ -27,7 +27,8 @@
                 android:id="@+id/stepperimage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/stepperlogo"/>
+                android:src="@drawable/stepperlogo"
+                android:layout_marginTop="40dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -96,6 +97,14 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/pausebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_margin="@dimen/fab_margin"
+                android:visibility="gone"
+                app:srcCompat="@drawable/pause" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/playbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
