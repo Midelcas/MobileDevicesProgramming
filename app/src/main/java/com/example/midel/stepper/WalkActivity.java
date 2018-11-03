@@ -171,11 +171,16 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         vibrator.vibrate(500);
                         break;
                     case FINISH:
-                        pauseWalk();
-                        previousStatus=currentStatus;
-                        currentStatus=STOPPED;
-                        confirmFinish();
-                        vibrator.vibrate(500);
+                        if(ready) {
+                            pauseWalk();
+                            previousStatus = currentStatus;
+                            currentStatus = STOPPED;
+                            confirmFinish();
+                            vibrator.vibrate(500);
+                        }else{
+                            toast = Toast.makeText(WalkActivity.this, "No walk started", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                         break;
                 }
                 break;
@@ -195,11 +200,16 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         vibrator.vibrate(500);
                         break;
                     case FINISH:
-                        pauseWalk();
-                        previousStatus=currentStatus;
-                        currentStatus=STOPPED;
-                        confirmFinish();
-                        vibrator.vibrate(500);
+                        if(ready){
+                            pauseWalk();
+                            previousStatus=currentStatus;
+                            currentStatus=STOPPED;
+                            confirmFinish();
+                            vibrator.vibrate(500);
+                        }else{
+                            toast = Toast.makeText(WalkActivity.this, "No walk started", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                         break;
                 }
                 break;
