@@ -11,6 +11,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.utils.FileUtils;
+
 public class ChartFragment extends Fragment {
     private List<Entry> entries = new ArrayList<Entry>();
     private LineChart lChart;
@@ -28,25 +35,18 @@ public class ChartFragment extends Fragment {
     private LineChart lChart3;
     private LineDataSet dataSet3;
     private LineData lineData3;
+    SimpleWalk simpleWalk;
+    ArrayList<SlotWalk> registrosSlotWalk;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        lChart=(LineChart)findViewById(R.id.chart);
-        lChart2=(LineChart)findViewById(R.id.chart2);
-        lChart3=(LineChart)findViewById(R.id.chart3);
+        simpleWalk = (SimpleWalk) getArguments().getSerializable("simpleWalk");
+        View rootView = inflater.inflate(R.layout.chart_fragment, container, false);
+        lChart=(LineChart)rootView.findViewById(R.id.chart);
+        lChart2=(LineChart)rootView.findViewById(R.id.chart2);
+        lChart3=(LineChart)rootView.findViewById(R.id.chart3);
 
-        Intent i=getIntent();
-
-        int position= i.getIntExtra("position", 0);
-        XMLManager = new XMLManagerWalk();
-        activitiesList = new ArrayList<SimpleWalk>();
         registrosSlotWalk= new ArrayList<SlotWalk>();
-        SimpleWalk simpleWalk=null;
 
-
-        checkWalks();
-        simpleWalk=activitiesList.get(position);
-
-        String name=simpleWalk.getName();
         long totalSteps=simpleWalk.getTotalSteps();
         float totalTime=0;
         double totalDistance=simpleWalk.getTotalDistance();
@@ -144,28 +144,23 @@ public class ChartFragment extends Fragment {
         lChart3.notifyDataSetChanged();
         lChart3.invalidate(); // refresh
 
-
-
-        TextView tvName=(TextView)findViewById(R.id.tvname);
-        tvName.setText(name);
-
         TextView tvmaxPasos;
-        tvmaxPasos=findViewById(R.id.tvmaxpasos);
+        tvmaxPasos=rootView.findViewById(R.id.tvmaxpasos);
         String smaxpasos=Float.toString(lineData.getYMax());
         tvmaxPasos.setText(smaxpasos);
 
         TextView tvminPasos;
-        tvminPasos=findViewById(R.id.tvminpasos);
+        tvminPasos=rootView.findViewById(R.id.tvminpasos);
         String sminpasos=Float.toString(lineData.getYMin());
         tvminPasos.setText(sminpasos);
 
         TextView tvmaxh;
-        tvmaxh=findViewById(R.id.tvmaxh);
+        tvmaxh=rootView.findViewById(R.id.tvmaxh);
         String smaxH=Float.toString(lineData2.getYMax());
         tvmaxh.setText(smaxH);
 
         TextView tvminh;
-        tvminPasos=findViewById(R.id.tvminh);
+        tvminPasos=rootView.findViewById(R.id.tvminh);
         String sminH=Float.toString(lineData2.getYMin());
         tvminPasos.setText(sminH);
 
@@ -183,6 +178,6 @@ public class ChartFragment extends Fragment {
         String stotalDistance=Double.toString(totalDistance);
         tvtotalDistance.setText(stotalDistance);
   */
-        return inflater.inflate(R.layout.chart_fragment, container, false);
+        return rootView;
     }
 }
