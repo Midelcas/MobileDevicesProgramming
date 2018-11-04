@@ -26,7 +26,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 tab1.setArguments(data);
                 return tab1;
             case 1:
-                ChartFragment tab2 = new ChartFragment();
+                ChartFragment_1 tab2 = new ChartFragment_1();
                 tab2.setArguments(data);
                 return tab2;
             case 2:

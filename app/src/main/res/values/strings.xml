@@ -23,10 +23,15 @@
     <string name="speedformat">Speed: %.2fkm/h</string>
     <string name="altitudeformat">Altitude: %.2fm</string>
     <string name="step">Steps:</string>
+    <string name="steps">Steps</string>
     <string name="walk_name">Walk name</string>
     <string name="ok">Ok</string>
     <string name="new_walk">New Walk</string>
     <string name="cancel">Cancel</string>
     <string name="want_cancel">Do you wan to cancel?</string>
     <string name="want_finish">Do you want to finish?</string>
+    <string name="time_format">%02d:%02d</string>
+    <string name="altitude">Altitude(m)</string>
+    <string name="total_steps">" - Total steps:"</string>
+    <string name="speed">Speed(km/h)</string>
 </resources>
