@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
     private void goToWalkActivity(){
         i = new Intent(MainActivity.this,WalkActivity.class);
-        i.putExtra(getString(R.string.simpleWalk), activitiesList );
+        i.putExtra(getString(R.string.simpleWalkList), activitiesList );
         startActivity(i);
         finish();
     }
