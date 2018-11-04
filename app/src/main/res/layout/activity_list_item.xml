@@ -13,13 +13,14 @@
         android:layout_marginRight="10dp"
         android:text="Activity Name"
         android:textColor="@android:color/holo_blue_dark"
-        android:textSize="24dp" />
+        android:textSize="18dp" />
 
     <TextView
         android:id="@+id/tvactivity_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textSize="18sp" />
 
 </LinearLayout>

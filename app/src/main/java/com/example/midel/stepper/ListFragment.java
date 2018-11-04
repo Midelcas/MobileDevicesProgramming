@@ -50,7 +50,10 @@ public class ListFragment extends Fragment {
         double [] valores={0,0,0,0,0};
 
         for(int i=0; i<simpleWalk.getRouteList().size();i++){
-            meanSpeed+=(simpleWalk.getRouteList().get(i).getDistance())/(simpleWalk.getRouteList().get(i).getTime());
+            if(simpleWalk.getRouteList().get(i).getTime()==0);
+            else{
+                meanSpeed+=(simpleWalk.getRouteList().get(i).getDistance())/(simpleWalk.getRouteList().get(i).getTime());
+            }
             if(simpleWalk.getRouteList().get(i).getDistance()>maxSpeed){
                 maxSpeed=simpleWalk.getRouteList().get(i).getDistance();
             }
@@ -89,11 +92,11 @@ public class ListFragment extends Fragment {
     public class ActivityData{
 
         private String [] activities_names={
-                "Minimum Height",
-                "Maximum Speed",
-                "Mean Speed",
-                "Total Distance",
-                "Total Steps"
+                "Minimum Height (m)",
+                "Maximum Speed (km/h)",
+                "Mean Speed (km/h)",
+                "Total Distance (m)",
+                "Total Steps (#)"
         };
         private double [] activities_results = array_values;
 
