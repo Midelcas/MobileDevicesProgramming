@@ -52,6 +52,7 @@ public class SimpleWalk implements Serializable {
     public String getName(){ return mName;}
     public Date getDate(){ return mDate;}
     public float getTotalTime(){ return mTotalTime;}
+    public double getMinimumAtitude(){ return mMinAltitude;}
     public long getTotalSteps(){ return mTotalSteps;}
     public double getTotalDistance(){ return mTotalDistance;}
     public double getEndingLongitude() { return mEndingLongitude;}
