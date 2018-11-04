@@ -1,6 +1,7 @@
 package com.example.midel.stepper;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -42,30 +43,35 @@ public class ListFragment extends Fragment {
     }
 
     private double [] valuesCalculator (SimpleWalk simpleWalk){
-        double minimumAltitude=simpleWalk.getMinimumAtitude();
-        double totalDistance=simpleWalk.getTotalDistance();
-        double totalSteps= (double) simpleWalk.getTotalSteps();
-        double maxSpeed=(double) 0;
-        double meanSpeed= (double) 0;
-        double [] valores={0,0,0,0,0};
+        double maxSpeed=0;
+        double minSpeed=100;
+        double meanSpeed=0;
+        double [] valores={0,0,0,0,0,0,0,0};
 
+        double currentSpeed=0;
         for(int i=0; i<simpleWalk.getRouteList().size();i++){
-            if(simpleWalk.getRouteList().get(i).getTime()==0);
-            else{
-                meanSpeed+=(simpleWalk.getRouteList().get(i).getDistance())/(simpleWalk.getRouteList().get(i).getTime());
+            if(simpleWalk.getRouteList().get(i).getTime()!=0){
+                currentSpeed=(simpleWalk.getRouteList().get(i).getDistance())/(simpleWalk.getRouteList().get(i).getTime());
             }
-            if(simpleWalk.getRouteList().get(i).getDistance()>maxSpeed){
-                maxSpeed=simpleWalk.getRouteList().get(i).getDistance();
+            if(currentSpeed>maxSpeed){
+                maxSpeed=currentSpeed;
+            }
+            if(currentSpeed<minSpeed){
+                minSpeed=currentSpeed;
             }
         }
-        meanSpeed=3.6*(meanSpeed/(simpleWalk.getRouteList().size()));
+        meanSpeed=3.6*simpleWalk.getTotalDistance()/simpleWalk.getTotalTime();
         maxSpeed*=3.6;
+        minSpeed*=3.6;
 
-        valores [0] = minimumAltitude;
-        valores [1] = maxSpeed;
-        valores [2] = meanSpeed;
-        valores [3] = totalDistance;
-        valores [4] = totalSteps;
+        valores [0] = simpleWalk.getMinimumAtitude();
+        valores [1] = simpleWalk.getMaximumAtitude();
+        valores [2] = minSpeed;
+        valores [3] = maxSpeed;
+        valores [4] = meanSpeed;
+        valores [5] = simpleWalk.getTotalDistance();
+        valores [6] = simpleWalk.getTotalSteps();
+        valores [7] = simpleWalk.getTotalTime();
 
         return valores;
     }
@@ -92,11 +98,14 @@ public class ListFragment extends Fragment {
     public class ActivityData{
 
         private String [] activities_names={
-                "Minimum Height (m)",
+                "Minimum Altitude (m)",
+                "Maximum Altitude (m)",
+                "Minimum Speed (km/h)",
                 "Maximum Speed (km/h)",
-                "Mean Speed (km/h)",
-                "Total Distance (m)",
-                "Total Steps (#)"
+                "Mean Speed    (km/h)",
+                "Total Distance   (m)",
+                "Total Steps      (#)",
+                "Total Time          "
         };
         private double [] activities_results = array_values;
 
@@ -136,7 +145,20 @@ public class ListFragment extends Fragment {
 
             Activity activity=items.get(position2);
             name.setText(activity.getName());
-            result.setText(Double.toString(activity.getResult()));
+            if(position2%2==1){
+                newView.setBackgroundColor(Color.parseColor("#a00088cc"));
+                name.setTextColor(Color.WHITE);
+                result.setTextColor(Color.WHITE);
+            }
+            if(position2==7)
+            {
+                double secs= activity.getResult();
+                int sec= (int)secs%60;
+                int minutes = (int)secs/60;
+                result.setText(String.format(getString(R.string.time_format), minutes,sec));
+            }else {
+                result.setText(String.format("%.2f", activity.getResult()));
+            }
 
             return newView;
         }
