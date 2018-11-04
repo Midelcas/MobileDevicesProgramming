@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         i = new Intent(MainActivity.this,WalkActivity.class);
         i.putExtra(getString(R.string.simpleWalk), activitiesList );
         startActivity(i);
-        finish();
+//        finish();
     }
 
     private void goToStatisticsActivity(SimpleWalk simple){
