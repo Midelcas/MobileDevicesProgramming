@@ -31,7 +31,9 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
     private ListView listView;
     private SimpleWalkAdapter adapter;
     private ArrayList<SimpleWalk> activitiesList;
+    Toast toast;
     int pos;
+    Intent i;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +45,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                 new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this,WalkActivity.class);
-                i.putExtra("simpleWalkList", activitiesList );
-                startActivity(i);
+                goToWalkActivity();
             }
         });
 
@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         listView = findViewById(R.id.listView);
         listView.setOnItemClickListener(this);
         listView.setChoiceMode( ListView.CHOICE_MODE_SINGLE );
-
-
 
         adapter = new SimpleWalkAdapter(this, activitiesList);
         listView.setAdapter(adapter);
@@ -75,24 +73,19 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
             FileInputStream is = XMLManager.XMLWalk.read_File(getFilesDir(), getString(R.string.WALKSXMLFILE));
             XMLManager.XMLWalk.parse_XML(is,activitiesList);
         }catch(IOException e){
-            Toast toast;
             toast = Toast.makeText(this,getString(R.string.error_reading_xml),Toast.LENGTH_SHORT);
             toast.show();
         }catch(ParseException e){
-            Toast toast;
             toast = Toast.makeText(this,getString(R.string.error_reading_xml),Toast.LENGTH_SHORT);
             toast.show();
         }catch(Exception e){
-            Toast toast;
             toast = Toast.makeText(this,getString(R.string.error_reading_xml),Toast.LENGTH_SHORT);
             toast.show();
         }
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent i = new Intent(MainActivity.this,StatisticsActivity.class);
-        i.putExtra(getString(R.string.simpleWalk), activitiesList.get(position));
-        startActivity(i);
+        goToStatisticsActivity(activitiesList.get(position));
     }
 
     public void startAnimation() {
@@ -108,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
     }
 
     public void confirmRemove(){
-
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
         View mView = layoutInflaterAndroid.inflate(R.layout.pop_up_confirm, null);
         AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
@@ -121,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                     public void onClick(DialogInterface dialogBox, int id) {
                         activitiesList.remove(pos);
                         adapter.notifyDataSetChanged();
+                        try{XMLManager.XMLWalk.saveXMLToFile(XMLManager.XMLWalk.write_XML(activitiesList),getFilesDir(), getString(R.string.WALKSXMLFILE));}catch(Exception e){}
                     }
                 })
 
@@ -181,5 +174,29 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
             return newView;
         }
 
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override
+    public void onBackPressed(){
+        finish();
+    }
+
+    private void goToWalkActivity(){
+        i = new Intent(MainActivity.this,WalkActivity.class);
+        i.putExtra(getString(R.string.simpleWalk), activitiesList );
+        startActivity(i);
+        finish();
+    }
+
+    private void goToStatisticsActivity(SimpleWalk simple){
+        i = new Intent(MainActivity.this,StatisticsActivity.class);
+        i.putExtra(getString(R.string.simpleWalk), simple);
+        startActivity(i);
+        finish();
     }
 }

@@ -84,9 +84,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     float currentSpeed;
     int currentStatus;
     int previousStatus;
+    Intent i;
 
-    //private com.example.midel.stepper.XMLManager XMLManager;
-    //private final String WALKSXMLFILE = "simpleWalks.xml";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +94,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent i = getIntent();
+        i = getIntent();
         activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra(getString(R.string.simpleWalkList));
         currentStatus=STOPPED;
         //running = false;
@@ -330,7 +329,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     checkLocationPermission();
                 } else {
-                    finish();
+                    goToMainActivity();
                 }
                 return;
             }
@@ -367,7 +366,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
                                 cancelWalk();
-                                finish();
+                                goToMainActivity();
                             }
                         });
 
@@ -419,10 +418,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
                         finishWalk();
-                        Intent i = new Intent(WalkActivity.this,StatisticsActivity.class);
-                        i.putExtra(getString(R.string.simpleWalk), simpleWalk);
-                        startActivity(i);
-                        finish();
+                        goToStatisticsActivity();
                     }
                 })
 
@@ -449,7 +445,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         time.stop();
         mLocation.removeLocationUpdates(mLocationCallback);
         sensorManager.unregisterListener(WalkActivity.this, stepperSensor);
-        finish();
+        goToMainActivity();
     }
 
     private void pauseWalk(){
@@ -487,5 +483,29 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 statusChange(CANCEL);
                 break;
         }
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override
+    public void onBackPressed(){
+        goToMainActivity();
+    }
+
+    private void goToMainActivity(){
+        i = new Intent(WalkActivity.this,MainActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    private void goToStatisticsActivity(){
+        i = new Intent(WalkActivity.this,StatisticsActivity.class);
+        i.putExtra(getString(R.string.simpleWalk), simpleWalk);
+        startActivity(i);
+        finish();
     }
 }

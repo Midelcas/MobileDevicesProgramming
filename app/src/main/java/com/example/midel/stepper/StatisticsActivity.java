@@ -18,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 public class StatisticsActivity extends AppCompatActivity {
 
     SimpleWalk simpleWalk;
+    Intent i;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,7 @@ public class StatisticsActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.route_w));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        Intent i = getIntent();
+        i = getIntent();
         simpleWalk = (SimpleWalk)i.getSerializableExtra(getString(R.string.simpleWalk));
         setTitle(simpleWalk.getName());
 
@@ -69,10 +70,27 @@ public class StatisticsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.home) {
-            finish();
+            goToMainActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
+    @Override
+    public void onBackPressed(){
+        goToMainActivity();
+    }
+
+    private void goToMainActivity(){
+        i = new Intent(StatisticsActivity.this,MainActivity.class);
+        startActivity(i);
+        finish();
     }
 }
