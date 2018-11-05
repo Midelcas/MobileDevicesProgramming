@@ -33,9 +33,9 @@ public class ListFragment extends Fragment {
         lv.setChoiceMode(lv.CHOICE_MODE_SINGLE);
         array_values = valuesCalculator(simpleWalk);
         ActivityData activityData = new ActivityData();
-        array_values = valuesCalculator(simpleWalk);
+        //array_values = valuesCalculator(simpleWalk);
         ActivitiesArrayAdapter activitiesArrayAdapter = new ActivitiesArrayAdapter(getActivity(), activityData.getActivityDataList());
-        array_values = valuesCalculator(simpleWalk);
+        //array_values = valuesCalculator(simpleWalk);
         lv.setAdapter(activitiesArrayAdapter);
 
         return rootView;
@@ -105,14 +105,14 @@ public class ListFragment extends Fragment {
                 "Mean Speed    (km/h)",
                 "Total Distance   (m)",
                 "Total Steps      (#)",
-                "Total Time          "
+                "Total Time   (mm:ss)"
         };
         private double [] activities_results = array_values;
 
         private ArrayList<Activity> mList= new ArrayList<Activity>();
 
         public ActivityData(){
-            //activities_results=valuesCalculator(simpleWalk);
+
             for(int i=0;i<activities_names.length;i++){
                 Activity activity=new Activity(activities_results[i],activities_names[i]);
                 mList.add(activity);
