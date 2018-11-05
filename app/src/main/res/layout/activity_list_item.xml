@@ -17,10 +17,12 @@
 
     <TextView
         android:id="@+id/tvactivity_result"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="TextView"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:gravity="right"
+        android:layout_marginRight="20dp"/>
 
 </LinearLayout>

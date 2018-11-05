@@ -53,6 +53,7 @@ public class SimpleWalk implements Serializable {
     public Date getDate(){ return mDate;}
     public float getTotalTime(){ return mTotalTime;}
     public double getMinimumAtitude(){ return mMinAltitude;}
+    public double getMaximumAtitude(){ return mMaxAltitude;}
     public long getTotalSteps(){ return mTotalSteps;}
     public double getTotalDistance(){ return mTotalDistance;}
     public double getEndingLongitude() { return mEndingLongitude;}
