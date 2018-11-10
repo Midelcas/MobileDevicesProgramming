@@ -46,4 +46,7 @@
     <string name="total_distance">Total Distance</string>
     <string name="total_steps">Total Steps</string>
     <string name="total_time">Total Time</string>
+    <string name="elevation_gain">Elevation Gain</string>
+    <string name="initial_altitude">Starting Altitude</string>
+    <string name="end_altitude">Ending Altitude</string>
 </resources>

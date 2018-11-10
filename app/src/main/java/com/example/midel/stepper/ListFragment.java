@@ -25,6 +25,9 @@ public class ListFragment extends Fragment {
         statsList= new ArrayList<StatisticItem>();
         statsList.add(new StatisticItem(simpleWalk.getMinimumAtitude(), getString(R.string.minimum_altitude),StatisticItem.METER));
         statsList.add(new StatisticItem(simpleWalk.getMaximumAtitude(), getString(R.string.maximum_altitude),StatisticItem.METER));
+        statsList.add(new StatisticItem(simpleWalk.getInitialAltitude(), getString(R.string.initial_altitude),StatisticItem.METER));
+        statsList.add(new StatisticItem(simpleWalk.getEndAltitude(), getString(R.string.end_altitude),StatisticItem.METER));
+        statsList.add(new StatisticItem(simpleWalk.getElevationGain(), getString(R.string.elevation_gain),StatisticItem.METER));
         statsList.add(new StatisticItem(simpleWalk.getMinSpeed(), getString(R.string.minimum_speed),StatisticItem.KMH));
         statsList.add(new StatisticItem(simpleWalk.getMaxSpeed(), getString(R.string.maximum_speed),StatisticItem.KMH));
         statsList.add(new StatisticItem(simpleWalk.getMeanSpeed(), getString(R.string.mean_speed),StatisticItem.KMH));

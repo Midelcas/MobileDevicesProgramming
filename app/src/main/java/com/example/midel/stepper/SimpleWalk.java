@@ -18,6 +18,7 @@ public class SimpleWalk implements Serializable {
     private double mMaxAltitude;
     private double mMinAltitude;
     private double mEndingAltitude;
+    private double mAltitudeGain;
     private double mInitialLongitude;
     private double mInitialLatitude;
     private double mEndingLongitude;
@@ -70,6 +71,9 @@ public class SimpleWalk implements Serializable {
     public double getMinSpeed() { return mMinSpeed;}
     public double getMeanSpeed() { return mMeanSpeed;}
     public ArrayList<SlotWalk> getRouteList() { return mRouteList;}
+    public double getInitialAltitude(){return mInitialAltitude;}
+    public double getEndAltitude(){return mEndingAltitude;}
+    public double getElevationGain(){return mAltitudeGain;}
 
     public void startWalk(SlotWalk aSlot){
         mInitialAltitude = aSlot.getAltitude();
@@ -83,11 +87,13 @@ public class SimpleWalk implements Serializable {
         mEndingLatitude = aSlot.getLatitude();
         mEndingLongitude = aSlot.getLongitude();
         mEndingAltitude = aSlot.getAltitude();
+        mAltitudeGain=mEndingAltitude-mInitialAltitude;
         addSlot(aSlot);
     }
-    public void incrementTime(float aTime){ mTotalTime+=aTime; }
-    public void incrementSteps(long aSteps){ mTotalSteps += aSteps;}
-    public void incrementDistance(float aDistance){ mTotalDistance+= aDistance;}
+
+    private void incrementTime(float aTime){ mTotalTime+=aTime; }
+    private void incrementSteps(long aSteps){ mTotalSteps += aSteps;}
+    private void incrementDistance(float aDistance){ mTotalDistance+= aDistance;}
     private void setMaxAltitude(double aAltitude){
         if(aAltitude>mMaxAltitude)
             mMaxAltitude = aAltitude;
