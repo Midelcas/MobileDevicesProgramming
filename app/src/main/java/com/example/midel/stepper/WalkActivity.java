@@ -72,6 +72,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     LocationCallback mLocationCallback;
     float elapsedTime;
     boolean ready;
+    boolean walkStarted;
     Toast toast;
 
     LatLng previousLocation;
@@ -97,6 +98,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         i = getIntent();
         activitiesList = (ArrayList<SimpleWalk>)i.getSerializableExtra(getString(R.string.simpleWalkList));
         currentStatus=STOPPED;
+        previousStatus=STOPPED;
         //running = false;
         getName();
 
@@ -115,7 +117,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         stepCounter = 0;
         elapsedTime = 0;
         ready = false;
-
+        walkStarted=false;
         previousLocation = null;
         previousSteps = 0;
         previousTime = 0;
@@ -177,13 +179,14 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             playbtn.setVisibility(View.GONE);
                             pausebtn.setVisibility(View.VISIBLE);
                             vibrator.vibrate(500);
+                            walkStarted=true;
                         }else{
                             toast = Toast.makeText(WalkActivity.this, getString(R.string.gps_wait), Toast.LENGTH_SHORT);
                             toast.show();
                         }
                         break;
                     case CANCEL:
-                        if(ready) {
+                        if(walkStarted) {
                             pauseWalk();
                             previousStatus = currentStatus;
                             currentStatus = STOPPED;
@@ -192,7 +195,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         vibrator.vibrate(500);
                         break;
                     case FINISH:
-                        if(ready) {
+                        if(walkStarted) {
                             pauseWalk();
                             previousStatus = currentStatus;
                             currentStatus = STOPPED;
@@ -221,7 +224,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         vibrator.vibrate(500);
                         break;
                     case FINISH:
-                        if(ready){
+                        if(walkStarted){
                             pauseWalk();
                             previousStatus=currentStatus;
                             currentStatus=STOPPED;

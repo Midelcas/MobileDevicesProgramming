@@ -28,7 +28,7 @@
     <string name="ok">Ok</string>
     <string name="new_walk">New Walk</string>
     <string name="cancel">Cancel</string>
-    <string name="want_cancel">Do you wan to cancel?</string>
+    <string name="want_cancel">Do you want to cancel?</string>
     <string name="want_finish">Do you want to finish?</string>
     <string name="time_format">%02d:%02d:%02d</string>
     <string name="chart_time_format">%02d:%02d</string>
