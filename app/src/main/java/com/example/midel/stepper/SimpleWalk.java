@@ -22,6 +22,9 @@ public class SimpleWalk implements Serializable {
     private double mInitialLatitude;
     private double mEndingLongitude;
     private double mEndingLatitude;
+    private double mMinSpeed;
+    private double mMaxSpeed;
+    private double mMeanSpeed;
     private ArrayList<SlotWalk> mRouteList;
 
 
@@ -37,6 +40,9 @@ public class SimpleWalk implements Serializable {
         mTotalTime = 0;
         mTotalSteps = 0;
         mTotalDistance = 0;
+        mMinSpeed = 100;
+        mMaxSpeed = 0;
+        mMeanSpeed= 0;
 
         mMaxAltitude = 0;
         mMinAltitude = 0;
@@ -60,6 +66,9 @@ public class SimpleWalk implements Serializable {
     public double getEndingLatitude() { return mEndingLatitude;}
     public double getInitialLongitude() { return mInitialLongitude;}
     public double getInitialLatitude() { return mInitialLatitude;}
+    public double getMaxSpeed() { return mMaxSpeed;}
+    public double getMinSpeed() { return mMinSpeed;}
+    public double getMeanSpeed() { return mMeanSpeed;}
     public ArrayList<SlotWalk> getRouteList() { return mRouteList;}
 
     public void startWalk(SlotWalk aSlot){
@@ -87,6 +96,21 @@ public class SimpleWalk implements Serializable {
         if(aAltitude<mMinAltitude)
             mMinAltitude = aAltitude;
     }
+    private void setMaxSpeed(double distance, float time){
+        double speed=(distance/time)*3.6;
+        if(speed>mMaxSpeed){
+            mMaxSpeed=speed;
+        }
+    }
+    private void setMinSpeed(double distance, float time){
+        double speed=(distance/time)*3.6;
+        if(speed<mMinSpeed){
+            mMinSpeed=speed;
+        }
+    }
+    private void setmMeanSpeed(){
+        mMeanSpeed=(mTotalDistance/mTotalTime)*3.6;
+    }
     public void addSlot(SlotWalk aSlot){
         mRouteList.add(aSlot);
 
@@ -95,6 +119,9 @@ public class SimpleWalk implements Serializable {
         incrementDistance(aSlot.getDistance());
         incrementSteps(aSlot.getSteps());
         incrementTime(aSlot.getTime());
+        setMinSpeed(aSlot.getDistance(),aSlot.getTime());
+        setMaxSpeed(aSlot.getDistance(),aSlot.getTime());
+        setmMeanSpeed();
     }
 
     public String toString(){

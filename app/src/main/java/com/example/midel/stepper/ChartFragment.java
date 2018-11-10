@@ -32,8 +32,6 @@ public class ChartFragment extends Fragment {
     private LineChart lChart3;
     private LineDataSet dataSet3;
     private LineData lineData3;
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SimpleWalk simpleWalk = (SimpleWalk) getArguments().getSerializable(getString(R.string.simpleWalk));
@@ -85,7 +83,6 @@ public class ChartFragment extends Fragment {
 
         return rootView;
     }
-
     private void configCharts(SimpleWalk simpleWalk){
         entries.add(new Entry(0,0));
         dataSet=new LineDataSet(entries, getString(R.string.steps) + getString(R.string.chart_total_steps) + simpleWalk.getTotalSteps());
