@@ -17,36 +17,30 @@ public class ListFragment extends Fragment {
 
     ListView lv;
     SimpleWalk simpleWalk;
-    double[] array_values=null;
+    ArrayList<StatisticItem> statsList;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        SimpleWalk simpleWalk = (SimpleWalk) getArguments().getSerializable(getString(R.string.simpleWalk));
-        ArrayList<SlotWalk> slotWalkList= simpleWalk.getRouteList();
+        simpleWalk = (SimpleWalk) getArguments().getSerializable(getString(R.string.simpleWalk));
 
         View rootView=inflater.inflate(R.layout.list_fragment, container,false);
-
-        super.onCreate(savedInstanceState);
         lv = (ListView)rootView.findViewById(R.id.listView2);
         lv.setChoiceMode(lv.CHOICE_MODE_SINGLE);
-        array_values = valuesCalculator(simpleWalk);
-        ActivityData activityData = new ActivityData();
-        //array_values = valuesCalculator(simpleWalk);
-        ActivitiesArrayAdapter activitiesArrayAdapter = new ActivitiesArrayAdapter(getActivity(), activityData.getActivityDataList());
-        //array_values = valuesCalculator(simpleWalk);
+
+        valuesCalculator();
+        ActivitiesArrayAdapter activitiesArrayAdapter = new ActivitiesArrayAdapter(getActivity(), statsList);
         lv.setAdapter(activitiesArrayAdapter);
 
         return rootView;
 
     }
 
-    private double [] valuesCalculator (SimpleWalk simpleWalk){
+    private void valuesCalculator (){
         double maxSpeed=0;
         double minSpeed=100;
         double meanSpeed=0;
-        double [] valores={0,0,0,0,0,0,0,0};
 
         double currentSpeed=0;
         for(int i=0; i<simpleWalk.getRouteList().size();i++){
@@ -64,102 +58,93 @@ public class ListFragment extends Fragment {
         maxSpeed*=3.6;
         minSpeed*=3.6;
 
-        valores [0] = simpleWalk.getMinimumAtitude();
-        valores [1] = simpleWalk.getMaximumAtitude();
-        valores [2] = minSpeed;
-        valores [3] = maxSpeed;
-        valores [4] = meanSpeed;
-        valores [5] = simpleWalk.getTotalDistance();
-        valores [6] = simpleWalk.getTotalSteps();
-        valores [7] = simpleWalk.getTotalTime();
+        statsList= new ArrayList<StatisticItem>();
+        statsList.add(new StatisticItem(simpleWalk.getMinimumAtitude(), getString(R.string.minimum_altitude),StatisticItem.METER));
+        statsList.add(new StatisticItem(simpleWalk.getMaximumAtitude(), getString(R.string.maximum_altitude),StatisticItem.METER));
+        statsList.add(new StatisticItem(minSpeed, getString(R.string.minimum_speed),StatisticItem.KMH));
+        statsList.add(new StatisticItem(maxSpeed, getString(R.string.maximum_speed),StatisticItem.KMH));
+        statsList.add(new StatisticItem(meanSpeed, getString(R.string.mean_speed),StatisticItem.KMH));
+        statsList.add(new StatisticItem(simpleWalk.getTotalDistance(), getString(R.string.total_distance),StatisticItem.METER));
+        statsList.add(new StatisticItem(simpleWalk.getTotalSteps(), getString(R.string.total_steps),StatisticItem.NUMBER));
+        statsList.add(new StatisticItem(simpleWalk.getTotalTime(), getString(R.string.total_time),StatisticItem.TIME));
 
-        return valores;
     }
 
 
-    public class Activity {
-        private Double result;
-        private String name;
+    public class StatisticItem {
+        private Object mValue;
+        private String mName;
+        private int mType;
+        public static final int METER=0;
+        public static final int KMH=1;
+        public static final int NUMBER=2;
+        public static final int TIME=3;
 
-        public Activity (Double res, String n){
-            result=res;
-            name=n;
+
+        public StatisticItem(Object aValue, String aName, int aType){
+            mValue=aValue;
+            mName=aName;
+            mType=aType;
         }
-        public Double getResult(){
-            return result;
+        public Object getValue(){
+            return mValue;
         }
         public String getName(){
-            return name;
+            return mName;
         }
-        public String toString(){
-            return name;
-        }
-    }
-    public class ActivityData{
-
-        private String [] activities_names={
-                "Minimum Altitude (m)",
-                "Maximum Altitude (m)",
-                "Minimum Speed (km/h)",
-                "Maximum Speed (km/h)",
-                "Mean Speed    (km/h)",
-                "Total Distance   (m)",
-                "Total Steps      (#)",
-                "Total Time   (mm:ss)"
-        };
-        private double [] activities_results = array_values;
-
-        private ArrayList<Activity> mList= new ArrayList<Activity>();
-
-        public ActivityData(){
-
-            for(int i=0;i<activities_names.length;i++){
-                Activity activity=new Activity(activities_results[i],activities_names[i]);
-                mList.add(activity);
-            }
-        }
-
-        public ArrayList<Activity> getActivityDataList() {
-            return mList;
+        public int getType(){
+            return mType;
         }
     }
-    class ActivitiesArrayAdapter extends  ArrayAdapter <Activity>{
-        private ArrayList<Activity> items;
+
+    class ActivitiesArrayAdapter extends  ArrayAdapter <StatisticItem>{
+        private ArrayList<StatisticItem> items;
         private Context mContext;
 
-        ActivitiesArrayAdapter(Context context, ArrayList<Activity> activities){
+        ActivitiesArrayAdapter(Context context, ArrayList<StatisticItem> activities){
             super(context, 0, activities);
             items=activities;
             mContext=context;
         }
 
         @Override
-        public View getView (int position2, View convertView, ViewGroup parent){
+        public View getView (int position, View convertView, ViewGroup parent){
             View newView = convertView;
             if(newView==null){
                 LayoutInflater inflater=(LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                newView=inflater.inflate(R.layout.activity_list_item, parent, false);
+                newView=inflater.inflate(R.layout.statistics_item_list, parent, false);
             }
             TextView name =(TextView)newView.findViewById(R.id.tvactivity_name);
             TextView result=(TextView)newView.findViewById(R.id.tvactivity_result);
 
-            Activity activity=items.get(position2);
-            name.setText(activity.getName());
-            if(position2%2==1){
+            if(position%2==1){
                 newView.setBackgroundColor(Color.parseColor("#a00088cc"));
                 name.setTextColor(Color.WHITE);
                 result.setTextColor(Color.WHITE);
             }
-            if(position2==7)
-            {
-                double secs= activity.getResult();
-                int sec= (int)secs%60;
-                int minutes = (int)secs/60;
-                result.setText(String.format(getString(R.string.time_format), minutes,sec));
-            }else {
-                result.setText(String.format("%.2f", activity.getResult()));
-            }
 
+            StatisticItem statisticItem=items.get(position);
+            name.setText(statisticItem.getName());
+
+            switch(statisticItem.getType()) {
+                case StatisticItem.METER:
+                    result.setText(String.format(String.format(getString(R.string.distance_format), (Double)statisticItem.getValue())));
+                    break;
+                case StatisticItem.KMH:
+                    result.setText(String.format(String.format(getString(R.string.speed_format), (Double)statisticItem.getValue())));
+                    break;
+                case StatisticItem.NUMBER:
+                    result.setText(String.format(String.format(getString(R.string.count_format), (long)statisticItem.getValue())));
+                    break;
+                case StatisticItem.TIME:
+                    float secs= (float)statisticItem.getValue();
+                    int sec= (int)secs%60;
+                    int minutes = (int)secs/60;
+                    int hours = (int)minutes/60;
+                    result.setText(String.format(getString(R.string.time_format),hours, minutes,sec));
+                    break;
+
+            }
             return newView;
         }
     }

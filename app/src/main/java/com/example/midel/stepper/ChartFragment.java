@@ -88,7 +88,7 @@ public class ChartFragment extends Fragment {
 
     private void configCharts(SimpleWalk simpleWalk){
         entries.add(new Entry(0,0));
-        dataSet=new LineDataSet(entries, getString(R.string.steps) + getString(R.string.total_steps) + simpleWalk.getTotalSteps());
+        dataSet=new LineDataSet(entries, getString(R.string.steps) + getString(R.string.chart_total_steps) + simpleWalk.getTotalSteps());
         lChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         XAxis xAxis1 = lChart.getXAxis();
         xAxis1.setValueFormatter(new MyXAxisValueFormatter());
@@ -127,7 +127,7 @@ public class ChartFragment extends Fragment {
         private String getTimeString(float secs){
             int sec= (int)secs%60;
             int minutes = (int)secs/60;
-            return String.format(getString(R.string.time_format), minutes,sec);
+            return String.format(getString(R.string.chart_time_format), minutes,sec);
         }
     }
 }

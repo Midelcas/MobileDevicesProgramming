@@ -140,11 +140,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent ) {
-            //LayoutInflater inflater = getLayoutInflater();
-            //View row = inflater.inflate(R.layout.country_list_item, parent, false);
             View newView = convertView;
-
-            // This approach can be improved for performance
             if ( newView == null ) {
                 LayoutInflater inflater = (LayoutInflater) mContext
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -160,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                     }
                 });
             }
-            //-----
 
             TextView name = (TextView) newView.findViewById(R.id.name);
             TextView date = (TextView) newView.findViewById(R.id.date);
