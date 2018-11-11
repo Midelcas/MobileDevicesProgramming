@@ -11,9 +11,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.media.Image;
 import android.os.Build;
 import android.os.SystemClock;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -33,16 +33,12 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 
-
+@SuppressWarnings("unchecked")
 public class WalkActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
     private static final int RUNNING = 0;
     private static final int STOPPED = 1;
@@ -86,6 +82,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     int currentStatus;
     int previousStatus;
     Intent i;
+    VibrationEffect effect = VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE);
 
 
     @Override
@@ -178,7 +175,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             currentStatus = RUNNING;
                             playbtn.setVisibility(View.GONE);
                             pausebtn.setVisibility(View.VISIBLE);
-                            vibrator.vibrate(500);
+                            vibrator.vibrate(effect);
                             walkStarted=true;
                         }else{
                             toast = Toast.makeText(WalkActivity.this, getString(R.string.gps_wait), Toast.LENGTH_SHORT);
@@ -192,7 +189,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             currentStatus = STOPPED;
                         }
                         confirmCancel();
-                        vibrator.vibrate(500);
+                        vibrator.vibrate(effect);
                         break;
                     case FINISH:
                         if(walkStarted) {
@@ -200,7 +197,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             previousStatus = currentStatus;
                             currentStatus = STOPPED;
                             confirmFinish();
-                            vibrator.vibrate(500);
+                            vibrator.vibrate(effect);
                         }else{
                             toast = Toast.makeText(WalkActivity.this, getString(R.string.no_walk), Toast.LENGTH_SHORT);
                             toast.show();
@@ -216,12 +213,12 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                         currentStatus=STOPPED;
                         pausebtn.setVisibility(View.GONE);
                         playbtn.setVisibility(View.VISIBLE);
-                        vibrator.vibrate(500);
+                        vibrator.vibrate(effect);
                         break;
                     case CANCEL:
                         previousStatus=currentStatus;
                         confirmCancel();
-                        vibrator.vibrate(500);
+                        vibrator.vibrate(effect);
                         break;
                     case FINISH:
                         if(walkStarted){
@@ -229,7 +226,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                             previousStatus=currentStatus;
                             currentStatus=STOPPED;
                             confirmFinish();
-                            vibrator.vibrate(500);
+                            vibrator.vibrate(effect);
                         }else{
                             toast = Toast.makeText(WalkActivity.this, getString(R.string.no_walk), Toast.LENGTH_SHORT);
                             toast.show();
